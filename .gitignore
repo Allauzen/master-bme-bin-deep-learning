@@ -1,3 +1,28 @@
+# LaTeX temporary files
+*.aux
+*.log
+*.toc
+
+
+# Latexmk
+*.fdb_latexmk
+
+# SyncTeX
+*.synctex.gz
+
+# LaTeX Beamer
+*.snm
+*.vrb
+*.nav
+*.out
+
+# BibTeX
+*.bbl
+*.blg
+*.sav
+*.bak
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

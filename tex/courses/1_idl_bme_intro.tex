@@ -1,0 +1,155 @@
+\pdfminorversion=4 % bug with acroread 
+\documentclass[10pt]{beamer}
+
+%% beamer template and options 
+\mode<presentation>
+{
+  \usetheme{CambridgeUS}
+  \usefonttheme{serif}
+  \useoutertheme{default}
+}\setbeamertemplate{navigation symbols}{} 
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor,comment,cancel}
+\specialcomment{extended}{}{}    
+\excludecomment{extended}
+\usepackage{../styles/authordate1-4-beamer}
+
+\usepackage{pgfplots}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{tikz}
+\usetikzlibrary{automata}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{snakes}
+\usetikzlibrary{arrows.meta,intersections}
+\tikzstyle{every picture}+=[remember picture]
+\usetikzlibrary{decorations.markings}
+
+
+
+
+
+
+\title[IDL@ESPCI] % (optional, use only with long paper titles)
+{Introduction to Deep Learning} 
+\subtitle{Machine Learning basics}
+
+\author[A. Allauzen] % (optional, use only with lots of authors)
+{Alexandre Allauzen}
+
+
+
+\institute[ESPCI/Dauphine/PSL] % (optional, but mostly needed)
+{
+\includegraphics[height=3em]{../logos/espci_blue.png}\hfill
+\raisebox{1.75ex}{\includegraphics[height=1.5em]{../logos/dauphine.png}}\\
+\hfill\includegraphics[height=3em]{../logos/logomiles_white.pdf}
+}
+
+
+
+
+\date{06/01/2020} % (optional)
+
+\input{../styles/common.tex}
+%\input{./src/common_nnet.tex}
+
+%%%%%%%%% macro et redefinition 
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+\tikzset{->-/.style={decoration={
+  markings,
+  mark=at position .5 with {\arrow{>}}},postaction={decorate}}}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents
+  \end{frame}
+ 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % General information :
+  % websites, drive
+  % labs / courses
+  % eval. 
+  
+  
+%%% 
+% Course introduction
+% Machine Learning : overview
+% Learn from data: an output from an input, a decision, a representation, ...
+% The main tasks in ML 
+% Deep learning and feature ing.
+% Roadmap
+ 
+  
+\section{Introduction}
+\input{../parts/intro_ml}
+
+\section{Roadmap}
+\input{../parts/roadmap}
+
+
+\section{Linear classification and logistic regression}
+\input{../parts/intro_linear}
+
+\section{Objective or loss function}
+\input{../parts/loss_function}
+
+%\section{From logistic regression to an artificial neuron}
+%\input{../parts/reglog_nnet.tex}
+
+\section{Optimization/Learning: gradient descent}
+\input{../parts/sgd}
+
+
+\section{Summary}
+\begin{frame}
+  \frametitle{Summary}
+  \begin{block}{Machine Learning overview}
+    \begin{itemize}
+    \item A model defines a \important{function}:
+      $\x \rightarrow \seq{y}$
+    \item The output is then used by a decision rule.
+    \item This function is defined by the parameters $\params$.
+    \item \important{Training/Learning} finds the good values for
+      $\params$
+    \item How ? by minimizing a \important{loss function} $\fullloss$.
+    \item How ? by \important{Stochastic Gradient Descent}
+    \item The \important{learning rate} is an
+      \important{hyper-parameter}.
+    \end{itemize}
+  \end{block}
+  \begin{block}{From logistic regression to artificial neurone}
+    \begin{itemize}
+    \item An artificial neurone is a \important{linear model} followed by a
+      non-linear \important{activation}
+    \item With the sigmoid activation, it is similar to the
+      \important{logistic regression}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{../styles/naaclhlt2012}
+{\footnotesize \bibliography{./alex}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

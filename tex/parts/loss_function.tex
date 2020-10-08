@@ -1,0 +1,55 @@
+
+
+
+\begin{frame}
+  \frametitle{Refresher:  Bernoulli distribution}
+  % P(y|alpha) = alpha^y (1-alpha)^(1-y)
+  % Ici on y_i et alpha = w.x_i
+  Let $\class$ be the outcome of a binary random variable $\rvclass$: 
+  \begin{block}{A Bernouilli distribution of parameter $\bern$}
+    \begin{align*}
+      P(\rvclass=1|\bern) &= \bern\\ 
+      P(\rvclass=0|\bern) &= 1-\bern \\
+      P(\rvclass=\class|\bern) &= \bern^{\class} (1-\bern)^{1-\class} \\
+    \end{align*}
+  \end{block}
+  For  $n$ observations i.i.d  (independent, identically distributed) : $(\class\sid{1}, ... , \class\sid{n} )$
+    $$
+    P((\class\sid{1}, ... , \class\sid{n} )|\bern) = \prod_{i=1}^n P(\rvclass=\classi|\bern) = \prod_{i=1}^n \bern^{\classi} (1-\bern)^{1-\classi}
+    $$
+  \end{frame}
+
+
+  \begin{frame}{Refresher: Bernoulli, exercices}
+    Given the following observations: 
+    $$
+    \dataset = ( 0, 0, 1 , 0 ,1, 1, 0, 0, 1, 0)
+    $$
+    \begin{itemize}
+    \item Assume we know $\bern$, compute
+      $P(\dataset|\bern)$
+    \item And what if $    \dataset = ( 1, 0, 0 , 0 ,1, 1, 0, 0, 0, 1)$ ? 
+    \item What are the sufficient statistics under our assumptions ? 
+    \item If you should estimate $\bern$ (learn) from
+      $\dataset$, what is your guess ? 
+    \item What is the underlying criterion ? 
+    \end{itemize}
+  \end{frame}
+
+
+  
+\begin{frame}
+  \frametitle{The conditionnal ``Likelihood'' measured on $\dataset$}
+     Given $\dataset = (\exi,\classi)_{i=1}^n = (\datax,\datac)$ and a logistic regression model, $\params =  (w_0, \vct{w})$. 
+     \begin{align*}
+       P(\datac | \datax, \params) &= \prod_{i=1}^n P(\rvclass = \classi| \exi, \params) \\
+       P(\datac | \datax, \params) &= \prod_{i=1}^n\bern\sid{i}^{\classi} (1-\bern\sid{i})^{1-\classi}\\
+       \bern\sid{i} &= y\sid{i} = \sigma(w_0 + \scal{\vct{w}}{\exi})  = \frac{1}{1+e^{-(w_0 + \scal{\vct{w}}{\exi})}}
+     \end{align*}
+     \begin{block}{The loss function (to minimize)}
+       \begin{align*}
+         \fullloss &= - log(P(\datac | \datax, \params) ) =  \sum_{i=1}^n  {\color{red} - \big(  \classi log(y\sid{i} )+ (1-\classi) log(1-y\sid{i})  \big)}\\
+                   &= \sum_{i=1}^n  {\color{red} \ploss(\params,\exi,\classi) }, \textrm{ with } {\color{red} \ploss(\params,\exi,\classi)} \textrm{ the pointwise loss.}
+       \end{align*}
+     \end{block}
+\end{frame}

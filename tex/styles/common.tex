@@ -1,0 +1,137 @@
+
+
+
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+
+\newcommand{\ngram}{\mbox{$n$-gram}\xspace} 
+
+
+
+%% important : red + bf 
+\def\important#1{{\bf \color{red} #1\/}}
+
+
+%%% basics : 
+\newcommand{\real}{\ensuremath{\mathbb{R}}}
+\newcommand{\vct}[1]{\ensuremath{\mathbf{#1}}} % a vector / matrix is in bold
+\newcommand{\seq}[1]{\ensuremath{\boldsymbol{#1}}}
+
+\newcommand{\transp}[1]{\ensuremath{{#1}^{t} }} % transposition 
+%\newcommand{\scal}[2]{\left\langle #1 , #2 \right\rangle} % scalair
+%product
+\newcommand{\scal}[2]{#1^t#2} % scalair product
+\newcommand{\mydot}[2]{\ensuremath{ \transp{#1} #2}} % dot prod
+\newcommand{\norm}[1]{\ensuremath{|| #1 ||}} % l2
+\newcommand{\normabs}[1]{\ensuremath{ || #1 ||_{1} }} % l1
+
+
+
+
+% vertical vector 
+\newcommand{\vv}[1]{
+	\left(
+	\begin{array}[c]{c}
+		#1 
+	\end{array}
+	\right)
+}
+% backeted vertical vector 
+\newcommand{\vvb}[1]{
+	\left[
+	\begin{array}[c]{c}
+		#1 
+	\end{array}
+	\right]
+}
+% raw vertical vector 
+\newcommand{\vvr}[1]{
+	\begin{array}[c]{c}
+		#1 
+	\end{array}
+}
+
+
+
+
+
+% words sequences sentences 
+\newcommand{\ws}{{w}} % 
+\newcommand{\wseq}{{\mathbf{\ws}}} % 
+\newcommand{\length}{{L}} % 
+\newcommand{\wsseq}[2]{{\ws_{#1}^{#2}}} % word subsequence
+\newcommand{\word}[1]{{\it #1}} % an example
+\newcommand{\vocab}{{\mathcal{V}}} % vocab
+
+\newcommand{\asymb}{\ensuremath{a}} % symbol of *one* element of the
+                                % alignment sequence
+\newcommand{\ssymb}{\ensuremath{s}} % symbol of *one* element of the source
+\newcommand{\tsymb}{\ensuremath{t}} % symbol of *one* element of the target
+
+
+\newcommand{\aseq}{\ensuremath{\mathbf{\asymb}}} % alignment sentence
+\newcommand{\sseq}{\ensuremath{\mathbf{\ssymb}}} % source sentence
+\newcommand{\tseq}{\ensuremath{\mathbf{\tsymb}}} % target sentence
+
+
+% misc 
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+\newcommand{\bos}{\texttt{\textless s\textgreater}} 
+\newcommand{\eos}{\texttt{\textless/s\textgreater}} 
+
+
+% machine learning i/o and parameters ...
+% params for model 
+\newcommand{\param}{\ensuremath{\theta}} 
+\newcommand{\params}{\ensuremath{\boldsymbol{\theta}}}
+\newcommand{\nfeats}{\ensuremath{D}} % 
+
+\newcommand{\x}{\ensuremath{\seq{x}}} % 
+\newcommand{\X}{\ensuremath{\seq{X}}} % 
+\newcommand{\y}{\ensuremath{\seq{y}}} % 
+\newcommand{\z}{\ensuremath{\seq{z}}} % 
+\newcommand{\w}{\ensuremath{\seq{w}}} % 
+\newcommand{\pa}{\ensuremath{\seq{a}}} % 
+\newcommand{\pb}{\ensuremath{\seq{b}}} % 
+
+\newcommand{\W}{\seq{W}}
+\newcommand{\V}{\seq{V}}
+\newcommand{\pgrad}[1]{\nabla_{#1}}
+\newcommand{\vgrad}[2]{\ensuremath{\nabla_{#1} #2}}
+
+%%%%%%% data and loss
+\newcommand{\nsamples}{\ensuremath{N}}
+\newcommand{\ploss}{\ensuremath{l}} % for one datapoint
+\newcommand{\class}{\ensuremath{{c}}} %
+\newcommand{\rvclass}{\ensuremath{{C}}} %  the class as a RV 
+\newcommand{\sid}[1]{\ensuremath{_{(#1)}}} % sample id
+\newcommand{\tid}[1]{_{(#1)}} % time index for parameters
+\newcommand{\exi}{\ensuremath{\x\sid{i}}} % 
+\newcommand{\classi}{\ensuremath{\class\sid{i}}} % 
+\newcommand{\nclasses}{\ensuremath{C}} % 
+\newcommand{\yi}{y\sid{i}}  % prediction for sample i 
+
+\newcommand{\dataset}{\ensuremath{\mathcal{D}}} % training data
+\newcommand{\datax}{\ensuremath{\mathcal{X}}} % training data, x part
+\newcommand{\datay}{\ensuremath{\tilde{\mathcal{Y}}}} % training data y part  
+\newcommand{\datac}{\ensuremath{\tilde{\mathcal{C}}}} % training data c part (classes)
+\newcommand{\ty}{\ensuremath{\tilde{y}}} % the supervised answer
+\newcommand{\fullloss}{\ensuremath{\mathcal{L}(\params;\dataset)}}
+
+%%% 
+\newcommand{\nlaw}{\mathcal{N}}
+\newcommand{\bern}{\ensuremath{\pi}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% a vector as a grid 
+% 1: x 
+% 2: y
+% 3: the number of cells 
+% The template :
+% \node[rectangle,rounded corners,  draw, fill=red!20, text width=0.3*\textwidth, minimum height=6ex]  (label) at (0,0) {Hello} ;
+\newcommand{\xvector}[3]{%
+  \draw[step=.25] (#1-0.001,#2) grid (#1+0.25,#2+#3*0.25 );%
+}

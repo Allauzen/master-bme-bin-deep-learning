@@ -1,0 +1,146 @@
+\documentclass[10pt]{beamer}
+%% beamer template and options 
+\mode<presentation>
+{
+  \usetheme{CambridgeUS}
+  \usefonttheme{serif}
+  \useoutertheme{default}
+}\setbeamertemplate{navigation symbols}{} 
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor,comment,cancel}
+\specialcomment{extended}{}{}    
+\excludecomment{extended}
+\usepackage{../styles/authordate1-4-beamer}
+
+\usepackage{pgfplots}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{tikz}
+\usetikzlibrary{automata,fit}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{snakes}
+\usetikzlibrary{arrows.meta,intersections}
+\tikzstyle{every picture}+=[remember picture]
+\usetikzlibrary{decorations.markings}
+
+
+
+
+
+\title[IDL@BME-BIN] % (optional, use only with long paper titles)
+{Introduction to Deep Learning} 
+\subtitle{Multi-Layered NNet and the back-propagation algorithm}
+
+\author[A. Allauzen] % (optional, use only with lots of authors)
+{Alexandre Allauzen}
+
+
+
+\institute[ESPCI/Dauphine/PSL] % (optional, but mostly needed)
+{
+\includegraphics[height=3em]{../logos/espci_blue.png}\hfill
+\raisebox{1.75ex}{\includegraphics[height=1.5em]{../logos/dauphine.png}}\\
+\hfill\includegraphics[height=3em]{../logos/logomiles_white.pdf}
+}
+
+
+
+
+\date{12/10/20} % (optional)
+
+\input{../styles/common.tex}
+\input{../styles/common_nnet.tex}
+
+%%%%%%%%% macro et redefinition 
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+\tikzset{->-/.style={decoration={
+  markings,
+  mark=at position .5 with {\arrow{>}}},postaction={decorate}}}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+ 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{From logistic regression to neural network}
+% - Multi-class classification
+% From binary to multi-class / Regression : architecture and loss function
+% see https://machinelearningmastery.com/how-to-choose-loss-functions-when-training-deep-learning-neural-networks/
+% - Matrix operation
+% Mini-batch operation 
+\input{../parts/reglog_nnet}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% - From linear to non-linear classification
+% - The feed-forward architecture and the back-propagation algorithm
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{From linear to non-linear classification}
+\input{../parts/intro_non_linear}
+\input{../parts/exercise_logic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% - Back propagation on a simple case 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Multi-layered neural network and the back-propagation algorithm}
+\input{../parts/back_prop}
+
+
+
+
+\section{Summary}
+\begin{frame}
+  \frametitle{Summary}
+  \begin{block}{Multi-layered Perceptron (MLP) or feed-forward NNet}
+    \begin{itemize}
+    \item Artificial neurons are organizes in \important{layers}:  $\rightarrow$ a vector  
+    \item Two layers are in general \important{fully connected}
+      \begin{itemize}
+      \item A linear transformation parametrized by a matrix
+      \item followed  by a pointwise non-linear function, the
+        activation function
+      \end{itemize}
+    \item A \important{feed-forward} architecture is a stack of layers
+      fully connected 
+    \item[$\rightarrow$] Can approximate any functions depending on the number of hidden
+      units. 
+    \end{itemize}
+  \end{block}
+  \begin{block}{Training by back-propagation}
+    \begin{itemize}
+    \item After a forward pass (inference from input to the output) 
+    \item Backward pass (compute the gradients of each layer from the
+      output to the input)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{../styles/naaclhlt2012}
+{\footnotesize \bibliography{./alex}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

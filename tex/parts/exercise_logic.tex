@@ -1,0 +1,68 @@
+\begin{frame}{Exercise: the X-or network}
+  \begin{center}
+    \vspace{-1cm}
+    \begin{tikzpicture}
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x1) at (0,0) {\small $x_1$};% in 1
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x2) at (0,1) {\small $x_2$};% in 2
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b1) at (0,2) {\small $1$};% b1 1
+      %%%% 
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z1) at (2,1) {\small $z_1$};% h 1
+      \draw[->-] (x1) -- (z1) ;
+      \draw[->-] (x2) -- (z1) ;
+      \draw[->-] (b1) -- (z1) ;
+      \node at (3,1.5) {\includegraphics[width=0.15\textwidth]{{figs/xor_1/xor_sep1_3d.pdf}}};
+      %%%% 
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z2) at (2,0) {\small $z_2$};% h 2
+        \draw[->-] (x1) -- (z2) ;
+        \draw[->-] (x2) -- (z2) ;
+        \draw[->-] (b1) -- (z2) ;      
+        \node at (3,-0.5) {\includegraphics[width=0.15\textwidth]{{figs/xor_1/xor_sep2_3d.pdf}}};
+      %%%%%
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (y) at (4,1) {\small $y$};% out
+        \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b2) at (2,2) {\small $1$};% b1 1        
+        \draw[->-] (z1) -- (y) ;
+        \draw[->-] (z2) -- (y) ;
+        \draw[->-] (b2) -- (y) ;
+        \node (out) at (8,1) {\includegraphics[width=0.6\textwidth]{{figs/xor_1/xor_mlp_3d.pdf}}};
+        \draw[->] (4.5,1) -- (6,1);
+        \node[draw=blue,ultra thick,fit=(x1) (x2) (b1)] {} ;
+        \node[draw=blue,ultra thick,fit=(z1) (z2) (b2)] {} ;
+%        \node[fill=blue!20,rectangle] at (1,1)  {$\mathbf{W_1}$};
+    \end{tikzpicture}
+    Compute the parameters of the output neuron  ($\seq{W}$) ? \\
+    What is its activation function ?
+  \end{center}
+\end{frame}
+
+\newcommand{\cone}{\color{green!30!black}}
+\newcommand{\czero}{\color{red!30!black}}
+\begin{frame}{Exercise : the X-or problem}
+  From a boolean algebra point of view. Assume {\cone true value is 1} and {\czero false is 0}
+  %%%%%%%%%%%%%%%%
+  \begin{columns}
+    \column{0.3\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{figs/xor_1/xor_sep1_2d.pdf}
+    \end{center}
+    %%%%
+    \column{0.7\textwidth}
+    \begin{itemize}
+    \item Write the truth table. 
+    \item Provide an interpretation as a boolean operator
+    \end{itemize}    
+  \end{columns}
+  %%%%%%%%%%%%%%%%
+  \begin{columns}
+    \column{0.3\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{figs/xor_1/xor_sep2_2d.pdf}
+    \end{center}
+    %%%%
+    \column{0.7\textwidth}
+        \begin{itemize}
+        \item  Write the truth table. 
+        \item Provide an interpretation as a boolean operator
+    \end{itemize}    
+  \end{columns}
+  Write the boolean operation implemented by the previous neural network by merging the two previsous steps. 
+\end{frame}

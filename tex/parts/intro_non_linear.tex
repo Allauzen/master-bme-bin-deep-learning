@@ -1,0 +1,222 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Remember: one artificial neuron}
+  \framesubtitle{Linear classification and the sigmoid function}
+      \begin{columns}
+        \column{0.5\textwidth}
+        \begin{align*}
+      P(\class=1 | \x) &= \sigma(\scal{\vct{w}}{\x}) = y \\
+      \sigma(a)  &= \frac{e^a}{1+e^a} = \frac{1}{1+e^{-a}}\\
+          a&=\scal{\vct{w}}{\x}, a \in \mathbb{R}\\
+          a &=w_0 +  w_1 x_1 + \cdots + w_{\nfeats} x_{\nfeats} \\
+          \params &=   (\vct{w}),  \dataset = (\exi, \classi )_{i=1}^n
+        \end{align*}
+        \column{0.5\textwidth}
+        \includegraphics[width=0.9\textwidth]{./figs/reg_log_3d_2.pdf}
+  \end{columns}
+
+  \begin{block}{Learning with (Stochastic) Gradient Descent }
+    Minimize $\fullloss = \sum_{i=1}^{\nsamples} \ploss(\params,\exi,\classi)$
+    $$ \ploss(\params,\exi,\classi) =  - {\color{green!70!black} \underbrace{\classi log(y_{(i)} )}_{\classi=1}}-
+    {\color{red!70!black} \underbrace{(1-\classi) log(1-y_{(i)})}_{\classi=0} }$$
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Limits of the linear separation}
+  \begin{center}
+\includegraphics[width=.45\textwidth]{./figs/linear_1.pdf} 
+\includegraphics[width=.45\textwidth]{figs/nonlinear_1.pdf}\\
+\includegraphics[width=.45\textwidth]{figs/nonlinear_2.pdf}
+\includegraphics[width=.45\textwidth]{figs/many_xor.pdf}
+\end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Case study : X-or}
+  \framesubtitle{Starting point}
+  \includegraphics[width=.475\textwidth]{figs/many_xor.pdf}
+  \includegraphics[width=.475\textwidth]{figs/xor_1/xor_2d.pdf}
+  \begin{block}{Hint}
+    Try a first linear separation, maybe two. 
+  \end{block}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Case study : X-or}
+  \framesubtitle{First try: linear classifiers}
+  \vspace{-1cm}
+  \begin{flushleft}
+    \begin{tikzpicture}
+      \node at (0,0)  {\includegraphics[width=.4\textwidth]{figs/xor_1/xor_sep2_2d.pdf}};
+      \node at (0,-1.75) {$\vct{w} = [3, -4, -4] $};
+      \node at (0.5*\textwidth-8,0)  {\includegraphics[width=.5\textwidth]{figs/xor_1/xor_sep2_3d.pdf}};
+  \end{tikzpicture}
+\end{flushleft}
+\vspace{-1cm}
+  \begin{flushleft}
+  \begin{tikzpicture}
+    \node at (0,0)  {\includegraphics[width=.4\textwidth]{figs/xor_1/xor_sep1_2d.pdf}};
+    \node at (0,-1.75) {$\vct{w} = [2.5, 4, 4] $};
+    \node at (0.5*\textwidth-8,0)  {\includegraphics[width=.5\textwidth]{figs/xor_1/xor_sep1_3d.pdf}};
+  \end{tikzpicture}
+\end{flushleft}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{A first neural network}
+  \framesubtitle{The multi-layer architecture}
+  \begin{center}
+    \vspace{-1cm}
+    \begin{tikzpicture}
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x1) at (0,0) {\small $x_1$};% in 1
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x2) at (0,1) {\small $x_2$};% in 2
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b1) at (0,2) {\small $1$};% b1 1
+      %%%% 
+      \uncover<2->{
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z1) at (2,1) {\small $z_1$};% h 1
+      \draw[->-] (x1) -- (z1) ;
+      \draw[->-] (x2) -- (z1) ;
+      \draw[->-] (b1) -- (z1) ;
+      \node at (3,1.5) {\includegraphics[width=0.15\textwidth]{{figs/xor_1/xor_sep1_3d.pdf}}};
+      }
+      %%%% 
+      \uncover<3->{
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z2) at (2,0) {\small $z_2$};% h 2
+        \draw[->-] (x1) -- (z2) ;
+        \draw[->-] (x2) -- (z2) ;
+        \draw[->-] (b1) -- (z2) ;      
+        \node at (3,-0.5) {\includegraphics[width=0.15\textwidth]{{figs/xor_1/xor_sep2_3d.pdf}}};
+      }
+      %%%%%
+      \uncover<4->{
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (y) at (4,1) {\small $y$};% out
+        \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b2) at (2,2) {\small $1$};% b1 1        
+        \draw[->-] (z1) -- (y) ;
+        \draw[->-] (z2) -- (y) ;
+        \draw[->-] (b2) -- (y) ;
+        \node (out) at (8,1) {\includegraphics[width=0.6\textwidth]{{figs/xor_1/xor_mlp_3d.pdf}}};
+        \draw[->] (4.5,1) -- (6,1);
+      }
+      \uncover<5->{
+        \node[draw=blue,ultra thick,fit=(x1) (x2) (b1)] {} ;
+        \node[draw=blue,ultra thick,fit=(z1) (z2) (b2)] {} ;
+%        \node[fill=blue!20,rectangle] at (1,1)  {$\mathbf{W_1}$};
+      }        
+    \end{tikzpicture}
+  \end{center}
+
+  \uncover<5->{
+    \vspace{-4ex}
+    \begin{itemize}
+    \item The network is organized by layers: input ($\vct{x}$), hidden  ($\vct{z}$), and output  ($\vct{y}$)
+    \item Two layers are fully connected % : A matrix gathers the connection weights: $\mathbf{W_1}$
+    \item The propagation of the input is sequential: 
+    \end{itemize}
+    \begin{align*}
+      z_1 &= f(\scal{\seq{v}_1}{\x}) \textrm{ and }  z_2 = f(\scal{\seq{v}_2}{\x})) &\Rightarrow \seq{z} = f(\seq{V}\x)\\
+      y &= f(\scal{\seq{w}}{\seq{z}}) &\Rightarrow y = f(\seq{W}\seq{z})\\
+    \end{align*}
+    % $$
+    % \vct{x} \rightarrow \vct{z} \rightarrow \vct{y}
+    % $$
+    % $$
+    % \vct{z} = f(\vct{W_1}\vct{x})
+    % $$
+    }
+  \end{frame}
+
+
+
+  
+  \begin{frame}{Another view of the neural network}
+%    \framesubtitle{Learning a new representation of the data}
+    \framesubtitle{Representation learning}
+    \begin{center}
+       \begin{tikzpicture}[scale=0.6]
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x1) at (0,0) {\small $x_1$};% in 1
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x2) at (0,1) {\small $x_2$};% in 2
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b1) at (0,2) {\small $1$};% b1 1
+      %%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z1) at (3,1) {\small $z_1$};% h 1
+      \draw[->-] (x1) -- (z1) ;
+      \draw[->-] (x2) -- (z1) ;
+      \draw[->-] (b1) -- (z1) ;
+      %%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z2) at (3,0) {\small $z_2$};% h 2
+      \draw[->-] (x1) -- (z2) ;
+      \draw[->-] (x2) -- (z2) ;
+      \draw[->-] (b1) -- (z2) ;      
+      %%%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (y) at (6,1) {\small $y$};% out
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b2) at (3,2) {\small $1$};% b1 1        
+      \draw[->-] (z1) -- (y) ;
+      \draw[->-] (z2) -- (y) ;
+      \draw[->-] (b2) -- (y) ;
+      \node[draw=blue,ultra thick,fit=(x1) (x2) (b1)] {} ;
+      \node[draw=blue,ultra thick,fit=(z1) (z2) (b2)] {} ;
+      \node[draw=blue,ultra thick,fit=(y)] {} ;
+      \node[fill=blue!20,rectangle] at (1.5,1)  {$\seq{V}$};
+      \node[fill=blue!20,rectangle] at (4.5,1)  {$\seq{W}$};
+      \end{tikzpicture}
+      \begin{tikzpicture}
+        \node at (-1.5,-2) {\includegraphics[width=.4\textwidth]{figs/many_xor.pdf}};
+        \node at (3.5,-2) {\includegraphics[width=.4\textwidth]{figs/many_xor_projected.pdf}};
+      \end{tikzpicture}
+    \end{center}
+    \vspace{-4ex}
+    \begin{itemize}
+    \item The network learns its own representation $\seq{z}$. 
+    \item The final decision is linear.
+    \end{itemize}
+\end{frame}
+
+% xor 
+
+
+\begin{frame}{Summary}
+  \framesubtitle{The multi-layer or feed-forward architecture}
+    \begin{columns}
+      %%%%%%%%%%%%% Column 1 
+      \column{0.6\textwidth}
+      \begin{itemize}
+      \item 1 neuron = 1 value;  1 layer = 1 vector 
+      \item Two layers ($\seq{x}, \seq{z}$)  fully connected: $$ \seq{z} = f(\seq{V} \seq{x})$$
+      \item Inference: a sequential propagation %  (matrix operation)
+      \item Hidden layer ($\seq{z})$: the internal representation  
+      \end{itemize}
+      %%%%%%%%%%%%% Column 2 
+      \column{0.4\textwidth}
+      \begin{tikzpicture}[scale=0.6]
+        \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x1) at (0,0) {\small $x_1$};% in 1
+        \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x2) at (0,1) {\small $x_2$};% in 2
+        \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b1) at (0,2) {\small $1$};% b1 1
+        %%%% 
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z1) at (3,1) {\small $z_1$};% h 1
+        \draw[->-] (x1) -- (z1) ;
+        \draw[->-] (x2) -- (z1) ;
+        \draw[->-] (b1) -- (z1) ;
+        %%%% 
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z2) at (3,0) {\small $z_2$};% h 2
+        \draw[->-] (x1) -- (z2) ;
+        \draw[->-] (x2) -- (z2) ;
+        \draw[->-] (b1) -- (z2) ;      
+        %%%%% 
+        \node[circle,draw, minimum size=3ex,inner sep=0pt]  (y) at (6,1) {\small $y$};% out
+        \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b2) at (3,2) {\small $1$};% b1 1        
+        \draw[->-] (z1) -- (y) ;
+        \draw[->-] (z2) -- (y) ;
+        \draw[->-] (b2) -- (y) ;
+        \node[draw=blue,ultra thick,fit=(x1) (x2) (b1)] {} ;
+        \node[draw=blue,ultra thick,fit=(z1) (z2) (b2)] {} ;
+        \node[draw=blue,ultra thick,fit=(y)] {} ;
+        \node[fill=blue!20,rectangle] at (1.5,1)  {$\seq{V}$};
+        \node[fill=blue!20,rectangle] at (4.5,1)  {$\seq{W}$};
+      \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+
+

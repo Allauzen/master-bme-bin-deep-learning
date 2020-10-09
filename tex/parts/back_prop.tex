@@ -1,0 +1,482 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% WARNING : use common_nnet.tex
+% Alex. Allauzen, 18 jan. 2020
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{For a shallow network, with a single layer}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+    \begin{center}
+      \begin{tikzpicture}
+        \begin{scope}
+          % input
+          \node (nx) at (-0.7,0.625){$\x$}; %
+          \foreach \y in {0,0.25,...,1.25}{ \draw (0,\y) circle
+            (0.1cm);%
+          } \draw (-0.2,-0.2) rectangle (0.2,1.5); \draw[snake=brace]
+          (-0.4,-0.125) -- (-0.4,1.375);
+          % output
+          \foreach \y in {0.25,0.5,...,1}{ \draw (1.5,\y) circle
+            (0.1cm);%
+          } \draw (1.3,0.05) rectangle (1.7,1.2); \draw (0.2,-0.2) --
+          (1.3,0.05); % high link between layers
+          \draw (0.2,1.5) -- (1.3,1.2);% low link between layers
+          \draw[dotted, thick] (0.2,1.5) -- (1.3,0.05);
+          \draw[dotted,thick] (0.2,-0.2) -- (1.3,1.2);
+          % \draw[snake=brace] ( 1.8, 1.2) --(1.8, 0.05) ;
+          \node[anchor=west] (ny) at
+          (1.3,1.5){$\outp=f(\W \x)$}; %
+          \node[anchor=west] (nW) at (0.83,-0.75){$\W$};%
+          \draw[->] (0.83,-0.7) -- (0.83,0.6);%
+          % fill one output unit
+          \draw[fill=red] (1.5,0.5) circle (0.1cm);
+          \node[anchor=west] (nyk) at (1.7,0.5){$y_k =
+            P(c=k|\x)$};%
+        \end{scope}
+      \end{tikzpicture}
+    \end{center}
+  \end{column}
+  %%% matrix view
+  \begin{column}{0.5\textwidth}
+     $$
+     \params = (\W)
+     $$
+  \end{column}
+  \end{columns}
+  %%%%%%%%%%%
+  \begin{center}
+  $$
+  \begin{array}{ll|ll}
+    \multicolumn{2}{c|}{\textrm{Forward (inference)}} &    \multicolumn{2}{c}{\textrm{Backward (gradient)}} \\\hline
+    &&&\\
+    %%% l1 
+    \ploss(\params,\exi,\classi) &\leftarrow \outp
+    &\displaystyle \frac{\partial \ploss(\params,\exi,\classi) }{\partial\W}= &\displaystyle \frac{\partial \ploss(\params,\exi,\classi) }{\partial\outp} \\[1.5ex]
+    %%% l2
+    \outp &= f(\seq{a})
+    & &\displaystyle \times \frac{\partial \outp }{\partial\seq{a}} \\[1.5ex]
+    %%% l3
+    \seq{a} &= \W\inp
+    &  &\displaystyle \times \frac{\partial \seq{a} }{\partial\W} 
+  \end{array}
+  $$
+\end{center}
+\end{frame}
+
+
+
+
+\begin{frame}{Review of the gradient computation}
+  \framesubtitle{Without hidden layer (shallow net)}
+  \setlength{\tabcolsep}{1pt} % less space between columns in tabular (default is 6pt
+  $\ploss$ is the shortcut for $\ploss(\classi, \x\sid{i}, \params\tid{i})$ 
+  \begin{center}
+  \begin{tabular}{ccccccc}
+    \tikz[baseline]{\node[anchor=base] (grad) 
+    {$\frac{\partial \ploss}{\partial \W}$};}
+    &=
+    &\tikz[baseline]{\node[fill=red!20,anchor=base] (loss) 
+      {$\frac{\partial \ploss}{\partial \yi} $};}
+    &$\times$  
+    &\tikz[baseline]{\node[fill=red!20,anchor=base] (outp) 
+      {$\frac{\partial  \yi  }{\partial \pa}$};}
+    &$\times$
+    &\tikz[baseline]{\node[fill=green!20,anchor=base] (inp) 
+      {$ \frac{\partial \pa}{\partial \W}$};}\\[6ex] %%%%%%%
+    \tikz[baseline]{\node[anchor=base] (grad2){Supervision};}
+    &
+    &\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (loss2){\small loss \textit{vs} output};}
+    &
+    &\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (outp2){\small activation};}
+    &
+    &\tikz[baseline]{\node[anchor=base,rounded corners,fill=green!20] (inp2){ \small gradient of $\W$};}\\[6ex]
+    & &\multicolumn{3}{c}{\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (err){
+        \small
+        \begin{tabular}{c}
+          Error signal \\ from supervision\\and output
+        \end{tabular}
+    };}}
+    &
+    & \tikz[baseline]{\node[anchor=base,rounded corners,fill=green!20] (inp3){
+      \small\begin{tabular}{c}
+              Contribution \\of $\W$\\
+              $\rightarrow \x$
+            \end{tabular}};}
+  \end{tabular}
+\end{center}
+
+
+  \begin{tikzpicture}[overlay]
+    \path[->](grad) edge  (grad2);
+    \path[->](loss) edge  (loss2);
+    \path[->](outp) edge  (outp2);
+    \path[->](inp) edge  (inp2);
+    \path[->](loss2) edge  (err);
+    \path[->](outp2) edge  (err);
+    \path[->](inp2) edge  (inp3);
+  \end{tikzpicture}
+\end{frame}
+
+
+
+\begin{frame}{In the matrix form}
+  \begin{center}
+  \begin{tabular}{ccccc}
+    \tikz[baseline]{\node[anchor=base] (grad) 
+    {$\pgrad{\W} = \frac{\partial \ploss}{\partial \W}$};}
+    &=
+    &\tikz[baseline]{\node[fill=red!20,anchor=base] (l) 
+      {$\frac{\partial \ploss}{\partial \yi} \times \frac{\partial  \yi  }{\partial \pa} $};}
+    &$\times$  
+    &\tikz[baseline]{\node[fill=green!20,anchor=base] (i) 
+      {$ \frac{\partial \pa}{\partial \W}$};}\\[6ex]
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    &=
+    &\tikz[baseline]{\node[fill=red!20,anchor=base] (l2) 
+      {$\vdlta_{\W}$};}
+    &$\times$  
+    &\tikz[baseline]{\node[fill=green!20,anchor=base] (i2) 
+      {$ \x^{t}$};}\\[6ex]
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    &= 
+    &\tikz[baseline]{\node[fill=red!20,anchor=base] (l3) 
+      {$(\nclasses,1) $};}
+    &$\times$  
+    &\tikz[baseline]{\node[fill=green!20,anchor=base] (i3)
+      {$(1,\nfeats) $};}\\[6ex]
+    %%%%%%%%%%%%%%%%%%%%%%%%% 
+    &$=$
+    &\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (l4){\small
+      \begin{tabular}{c}
+        Gradient \\up to the \\pre-activation
+      \end{tabular}
+      };}
+    &$\times$  
+    &\tikz[baseline]{\node[anchor=base,rounded corners,fill=green!20] (i4){\small
+      \begin{tabular}{c}
+        input of\\the layer
+      \end{tabular}
+      };}
+  \end{tabular}
+\end{center}
+
+\begin{tikzpicture}[overlay]
+  \path[->](l) edge  (l2);
+  \path[->](i) edge  (i2);
+  \path[->](l2) edge  (l3);
+  \path[->](i2) edge  (i3);
+  \path[->](l3) edge  (l4);
+  \path[->](i3) edge  (i4);
+\end{tikzpicture}
+
+\begin{itemize}
+\item $\pgrad{\W}$ is a matrix of size $(\nclasses,\nfeats)$
+\item $\pgrad{\W}[i,j] = \vdlta[i] \times \x[j]$
+\end{itemize}
+  
+\end{frame}
+
+\begin{frame}{Gradient computation with one hidden layer}
+  \begin{columns}
+    %%%%%%%%%%%%% Column 1
+    \column{0.5\textwidth}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x1) at (0,0) {\small $x_1$};% in 1
+      \node[circle,draw ,fill=gray!20, minimum size=3ex,inner sep=0pt]  (x2) at (0,1) {\small $x_2$};% in 2
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b1) at (0,2) {\small $1$};% b1 1
+      %%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z1) at (3,1) {\small $z_1$};% h 1
+      \draw[->-] (x1) -- (z1) ;
+      \draw[->-] (x2) -- (z1) ;
+      \draw[->-] (b1) -- (z1) ;
+      %%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (z2) at (3,0) {\small $z_2$};% h 2
+      \draw[->-] (x1) -- (z2) ;
+      \draw[->-] (x2) -- (z2) ;
+      \draw[->-] (b1) -- (z2) ;      
+      %%%%% 
+      \node[circle,draw, minimum size=3ex,inner sep=0pt]  (y) at (6,1) {\small $y$};% out
+      \node[circle,draw ,fill=gray!60, minimum size=3ex,inner sep=0pt]  (b2) at (3,2) {\small $1$};% b1 1        
+      \draw[->-] (z1) -- (y) ;
+      \draw[->-] (z2) -- (y) ;
+      \draw[->-] (b2) -- (y) ;
+      \node[draw=blue,ultra thick,fit=(x1) (x2) (b1)] {} ;
+      \node[draw=blue,ultra thick,fit=(z1) (z2) (b2)] {} ;
+      \node[draw=blue,ultra thick,fit=(y)] {} ;
+      \node[fill=blue!20,rectangle] at (1.5,1)  {$\seq{V}$};
+      \node[fill=blue!20,rectangle] at (4.5,1)  {$\seq{W}$};
+    \end{tikzpicture}
+  \end{center}
+    %%%%%%%%%%%%% Column 1 
+    \column{0.5\textwidth}
+    Two questions (or gradients): 
+    {\large
+      \begin{itemize}
+      \item $\frac{\partial \ploss}{\partial \W} =~ ? $
+      \item $\frac{\partial \ploss}{\partial \V} =~ ? $
+      \end{itemize}
+    }
+  \end{columns}
+\end{frame}
+
+
+
+\begin{frame}{Gradient computation with one hidden layer}
+  \framesubtitle{Step 1: $\W$}
+  \begin{center}
+    \begin{tabular}{ccccccc}
+      \tikz[baseline]{\node[anchor=base] (grad) 
+      {$\frac{\partial \ploss}{\partial \W}$};}
+      &=
+      &\tikz[baseline]{\node[fill=red!20,anchor=base] (loss) 
+        {$\frac{\partial \ploss}{\partial \yi} $};}
+      &$\times$  
+      &\tikz[baseline]{\node[fill=red!20,anchor=base] (outp) 
+        {$\frac{\partial  \yi  }{\partial \pa}$};}
+      &$\times$
+      &\tikz[baseline]{\node[fill=blue!20,anchor=base] (inp) 
+        {$ \frac{\partial \pa}{\partial \W}$};}\\[6ex] %%%%%%%
+      \tikz[baseline]{\node[anchor=base] (grad2){Supervision};}
+      &
+      &\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (loss2){\small loss \textit{vs} output};}
+      &
+      &\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (outp2){\small activation};}
+      &
+      &\tikz[baseline]{\node[anchor=base,rounded corners,fill=blue!20] (inp2){ \small gradient of $\W$};}\\[6ex]
+      & &\multicolumn{3}{c}{\tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (err){
+          \small $\vdlta_{\W}$};}}
+      &$\times$
+      & \tikz[baseline]{\node[anchor=base,rounded corners,fill=blue!20] (inp3){
+        \small$\z^t$};}
+    \end{tabular}
+  \end{center}
+  \begin{tikzpicture}[overlay]
+    \path[->](grad) edge  (grad2);
+    \path[->](loss) edge  (loss2);
+    \path[->](outp) edge  (outp2);
+    \path[->](inp) edge  (inp2);
+    \path[->](loss2) edge  (err);
+    \path[->](outp2) edge  (err);
+    \path[->](inp2) edge  (inp3);
+  \end{tikzpicture}
+  \begin{itemize}
+  \item Very similar to the shallow network, but the ``input'' is $\z$ instead of $\x$  
+  \item But $\z$ is computed by the network (parameters $\V$)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Gradient computation with one hidden layer}
+  \framesubtitle{Step 2 : $\V$}
+  Denote the pre-activation of the input layer $\pb = \V\x$
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \tikz[baseline]{\node[anchor=base] (grad) 
+      {$\frac{\partial \ploss}{\partial \V}$};}
+      &=
+      &\tikz[baseline]{\node[fill=red!20,anchor=base] (loss) 
+        {$\frac{\partial \ploss}{\partial \yi}\times\frac{\partial  \yi  }{\partial \pa} $};}
+      &$\times$  
+      &\tikz[baseline]{\node[fill=blue!20,anchor=base] (inner) 
+        {$\frac{\partial  \pa  }{\partial \z}\times\frac{\partial  \z  }{\partial \pb}$};}
+      &$\times$
+      &\tikz[baseline]{\node[fill=green!20,anchor=base] (inp) 
+        {$ \frac{\partial \pb}{\partial \V}$};}\\[6ex] %%%%%%%
+      &
+      & \tikz[baseline]{\node[anchor=base,rounded corners,fill=red!20] (err){$\vdlta_{W}$  };}
+      &
+      & \tikz[baseline]{\node[anchor=base,rounded corners,fill=blue!20] (inner2){
+          \footnotesize
+          \begin{tabular}{c}
+            Through $\W$\\ and \\  the activation
+          \end{tabular}
+      };}
+      &
+      &  \tikz[baseline]{\node[anchor=base,rounded corners,fill=green!20] (inp2){
+        \footnotesize\begin{tabular}{c}
+                Contribution \\of $\V$\\
+                 $\rightarrow\x$
+              \end{tabular}};}
+    \end{tabular}
+  \end{center}
+    \begin{tikzpicture}[overlay]
+    \path[->](loss) edge  (err);
+    \path[->](inner) edge  (inner2);
+    \path[->](inp) edge  (inp2);
+    \path[->](err) edge  (inner2);
+    \path[->](inner2) edge  (inp2);
+  \end{tikzpicture}
+  \begin{itemize}
+  \item The error signal $\vdlta_{W}$ is back-propagated through $\W$, 
+  \item to get $\vdlta_{V}$
+  \item The update for $\V$ is $\pgrad{\V} = \vdlta_{V}\z^t$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The back-propagation algorithm for a feed-forward network with one hidden layer}
+  \framesubtitle{Introduced in \cite{Rumelhart86BP}}
+  One iteration of the online version, for a given value of $\params$:
+  \begin{enumerate}
+  \item Foward propagation of $\exi$ ($\rightarrow\ \z$ and $\y\sid{i}$)
+  \item Compute the loss 
+  \item Back-propagation and collect of  the gradients:
+    \begin{itemize}
+    \item output layer: $\vdlta_{W}$ and $\pgrad{\W} = \vdlta_{W}\z^t$
+    \item input layer: $\vdlta_{V}$ and $\pgrad{\V} = \vdlta_{V}\x^t$
+    \end{itemize}
+  \item Update parameters:
+    \begin{align*}
+      \W &= \W - \eta \pgrad{\W} \\
+      \V &= \V - \eta \pgrad{\V} 
+    \end{align*}
+  \end{enumerate}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Multi-layers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Notations for a multi-layer neural network (feed-forward)}
+  \begin{block}{One layer, indexed by $l$}
+    \begin{columns}
+      \begin{column}{0.3\textwidth}
+        \begin{tabular}[h]{lcl}
+          \inp\lid{l} & & \\
+          \layer &\connection &\layer\\[-2ex]
+          & \raisebox{\raiseW}{\W\lid{l}} &\outp\lid{l} 
+        \end{tabular} 
+      \end{column}
+      \begin{column}{0.7\textwidth}
+        \begin{itemize}
+        \item \inp\lid{l}: input of the layer $l$
+        \item \outp\lid{l} =  $f$\lid{l}(\W\lid{l} \inp\lid{l})
+        \item stacking layers:  \outp\lid{l} $=$ \inp\lid{l+1} 
+        \item \inp\lid{1}  = a data example
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  \end{block}
+  
+  \vspace{-2ex}
+  \begin{center}
+    \begin{tabular}[h]{lclclclclcl}
+      \color{red}\inp\lid{1} & & \inp\lid{2}  && \inp\lid{3} & &\inp\lid{L} \\
+      \color{red}\layer &\connection &\layer &\connection &\layer &\dotted &\layer &\connection &\color{red}\layer \\[-2ex]
+      & \raisebox{\raiseW}{\W\lid{1}} &\outp\lid{1}   &\raisebox{\raiseW}{\W\lid{2}} &\outp\lid{2}  &&\outp\lid{L-1}&\raisebox{\raiseW}{\W\lid{L}} &\color{red}\outp\lid{L}: output 
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% with one hidden layer  : x is no more x but x2 = y1 = W1 x1 = W1 x
+% We can update W2 but what about W1 ? 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Example : with one hidden layer}
+  \begin{columns}
+    \begin{column}{0.7\textwidth}
+      \begin{center}
+        \begin{tabular}[h]{lclclr}
+          \color{red}\inp\lid{1} & & \inp\lid{2}  && \\
+          \color{red}\layer &\connection &\layer &\connection &\layer \\[-2ex]
+          & \raisebox{\raiseW}{\W\lid{1}} &\outp\lid{1}   &\raisebox{\raiseW}{\W\lid{2}} &\color{red}\outp\lid{2}: output 
+        \end{tabular}
+      \end{center}
+     \end{column}
+    \begin{column}{0.3\textwidth}
+      $\params=(\W\lid{1},\W\lid{2})$
+    \end{column}
+  \end{columns}
+  \begin{block}{To learn, we need the gradients for: }
+    \begin{itemize}
+    \item the output layer: $\pgrad{\W\lid{2}}$
+    \item the hidden layer: $\pgrad{\W\lid{1}}$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Back-propagation: generalization}
+  For a hidden layer $l$:
+  \begin{itemize}
+  \item  The gradient at the pre-activation level: 
+    $$
+    \vdlta\lid{l} = {f'}\lid{l}(\seq{a}\lid{l})\circ \big({\W\lid{l+1}}^t \vdlta\lid{l+1}\big)
+    $$
+  \item The update is as follows: 
+    $$
+    \W\lid{l} =     \W\lid{l}  - \eta_t  \vdlta\lid{l}{\x\lid{l}}^t
+    $$
+  \end{itemize}
+  The layer should keep: 
+  \begin{itemize}
+  \item $\W\lid{l}$: the parameters
+  \item $f\lid{l}$: its activation function
+  \item $\inp\lid{l}$: its input
+  \item $\seq{a}\lid{l}$: its pre-activation associated to the input
+  \item $\vdlta\lid{l}$: for the update and the back-propagation to the layer $l-1$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Back-propagation: one training step}
+Pick a training example: $\inp\lid{1} = \x\sid{i}$
+  \begin{block}{Forward pass}
+    For $l=1$ to $(L-1)$
+    \begin{itemize}
+    \item Compute $\outp\lid{l}=f\lid{l}(\W\lid{l}\inp\lid{l})$
+    \item $\inp\lid{l+1} = \outp\lid{l}$
+    \end{itemize}
+    $\outp\lid{L}=f\lid{L}(\W\lid{L}\inp\lid{L})$
+  \end{block}
+  \begin{block}{Backward pass}
+    % $$\vdlta\lid{L} = \frac{\partial
+    %   \ploss(\params,\exi,\classi)}{\partial \seq{a}\lid{L}}$$
+    Init: $\vdlta\lid{L} = \pgrad{\seq{a}\lid{L}}$\\
+    For $l=L$ to $2$ {\color{gray!80}// all hidden units}
+    \begin{itemize}
+    \item $\vdlta\lid{l-1} = {f'}\lid{l-1}(\seq{a}\lid{l-1})\circ \big({\W\lid{l}}^t \vdlta\lid{l}\big)$
+    \item $\W\lid{l} = \W\lid{l}  - \eta_t  \vdlta\lid{l}{\x\lid{l}}^t$
+    \end{itemize}
+    $\W\lid{1} = \W\lid{1}  - \eta_t  \vdlta\lid{1}{\x\lid{1}}^t$
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}{Conclusion on back-propagation for one layer $l$}
+  Training a NNet relies on forward-backward propagation. 
+  \begin{block}{Forward:}
+    \begin{itemize}
+    \item get $\inp\lid{l}$ for the previous layer;
+    \item compute and send $\outp\lid{l}=f\lid{l}(\W\lid{l}\inp\lid{l})$.
+    \end{itemize}
+  \end{block}
+  \begin{block}{Backward:}
+    \begin{itemize}
+    \item get $\vdlta\lid{l}$ as input from the up-comming
+      layer;
+    \item compute and send $\vdlta\lid{l-1}$ to the previous layer;
+    \item update parameters $\W\lid{l}$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Initialization recipes}
+  A difficult question with several empirical answers. 
+  \begin{block}{One standard trick}
+    $$\W \sim \mathcal{N}(0,\frac{1}{\sqrt{n_{in}}})  $$
+    with $n_{in}$ is the number of inputs
+  \end{block}
+  \begin{block}{A more recent one}
+    $$\W \sim \mathcal{U}
+    \Big[-\frac{\sqrt{6}}{\sqrt{n_{in}+n_{out}}},
+    \frac{\sqrt{6}}{\sqrt{n_{in}+n_{out}}} \Big]  $$
+    with $n_{in}$ is the number of inputs
+  \end{block}
+\end{frame}

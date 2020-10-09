@@ -200,6 +200,102 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%% use the cancel package 
+\begin{frame}{Refresher: Matrix and Vector product}
+  \begin{center}
+    \begin{tabular}{rllr}
+      $ \vct{y}$ &\ $=\ \W$ &$\ \times\ \x$ \\[2ex]
+      %%%%%%%% line with figs 
+      \begin{tikzpicture}
+
+        \draw[fill=green!20] (0,0.5) rectangle (0.25, 0.25);
+        \draw[fill=red!20] (0,0.25) rectangle (0.25, 0.0);
+        \draw[fill=orange!20] (0,0.0) rectangle (0.25, -0.25);
+        \draw[fill=blue!20] (0,-0.25) rectangle (0.25, -0.5);
+        \draw[step=.25] (0,-0.5) grid (0.25, 0.5);
+      \end{tikzpicture}
+      
+                &\begin{tikzpicture}
+                          \node at (-0.3,-0) {$=$};
+        \draw[fill=green!20] (0,0.5) rectangle (1.5, 0.25);
+        \draw[fill=red!20] (0,0.25) rectangle (1.5, 0.0);
+        \draw[fill=orange!20] (0,0.0) rectangle (1.5, -0.25);
+        \draw[fill=blue!20] (0,-0.25) rectangle (1.5, -0.5);
+        \draw[step=.25] (0,-0.5) grid (1.5, 0.5);
+      \end{tikzpicture}
+
+      &\begin{tikzpicture}
+        \node at (-0.3,-0.25) {$\times$};
+        \draw[step=.25] (0,-0.75) grid (0.25, 0.75);
+      \end{tikzpicture}\\[2ex]
+      %%%%%
+      \color{green!60}$y_1$ &\color{green}$\ =\ \W_{1,:}$ &$\  \times\ \x$\\
+      \color{red!60}$y_2$ &\color{red!60}$\ =\ \W_{2,:}$ &$\  \times\ \x$\\
+      \ $\cdots$ &\ $\cdots$ &$\ \cdots$
+    \end{tabular}
+\end{center}
+In terms of dimension: 
+\begin{displaymath}
+  \textrm{With } \left\{
+    \begin{array}{ll}
+      \x  &: (L_1 \times 1)\\
+      \W  &: (L_2 \times C_2)\\
+      \seq{y} &: (L_2 \times 1)
+    \end{array} \right. \Rightarrow (\W\x) :
+   (L_2 \times 1)= (L_2 \times \underbrace{\xcancel{C_2) (L_1 } }_{\color{red}C_2=L_1} \times 1)
+\end{displaymath}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%% use the cancel package 
+\begin{frame}{Refresher: Matrix-matrix product}
+  $\seq{X}$ is a matrix of 2 columns, 2 vectors as $\x$: 
+  \begin{center}
+    \begin{tabular}{rllr}
+      $ \seq{Y}$ &\ $=\W$ &$\ \times\ \seq{X}$ \\[2ex]
+      %%%%%%%% line with figs 
+      \begin{tikzpicture}
+        % matrix Y 
+        \draw[fill=green!20] (0,0.5) rectangle (0.5, 0.25);
+        \draw[fill=red!20] (0,0.25) rectangle (0.5, 0.0);
+        \draw[fill=orange!20] (0,0.0) rectangle (0.5, -0.25);
+        \draw[fill=blue!20] (0,-0.25) rectangle (0.5, -0.5);
+        \draw[step=.25] (0,-0.5) grid (0.5, 0.5);
+        \draw[draw=red,very thick] (0.25,-0.5) rectangle (0.5, 0.5);
+      \end{tikzpicture}
+      % matrix W
+                &\begin{tikzpicture}
+                          \node at (-0.3,-0) {$=$};
+        \draw[fill=green!20] (0,0.5) rectangle (1.5, 0.25);
+        \draw[fill=red!20] (0,0.25) rectangle (1.5, 0.0);
+        \draw[fill=orange!20] (0,0.0) rectangle (1.5, -0.25);
+        \draw[fill=blue!20] (0,-0.25) rectangle (1.5, -0.5);
+        \draw[step=.25] (0,-0.5) grid (1.5, 0.5);
+      \end{tikzpicture}
+      % Matrix X 
+      &\begin{tikzpicture}
+        \node at (-0.3,-0.25) {$\times$};
+        \draw[step=.25] (0,-0.75) grid (0.5, 0.75);
+        \draw[draw=red,very thick] (0.25,-0.75) rectangle (0.5, 0.75);
+      \end{tikzpicture}
+      %%%%%
+    \end{tabular}
+\end{center}
+In terms of dimension: 
+\begin{displaymath}
+  \textrm{With } \left\{
+    \begin{array}{ll}
+      \seq{X}  &: (L_1 \times C_1)\\
+      \W  &: (L_2 \times C_2)\\
+      \seq{y} &: (L_2 \times C_1)
+    \end{array} \right. \rightarrow
+   (L_2 \times C_2)= (L_2 \times \underbrace{\xcancel{C_2) (L_1 } }_{\color{red}C_2=L_1} \times C_1)
+\end{displaymath}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \begin{frame}
   \frametitle{Two layers fully connected}
   \begin{center}
@@ -278,100 +374,6 @@
 \end{frame}
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%%%%%%%% use the cancel package 
-\begin{frame}{Matrix and Vector product}
-  \begin{center}
-    \begin{tabular}{rllr}
-      $ \vct{y}$ &\ $=\ \W$ &$\ \times\ \x$ \\[2ex]
-      %%%%%%%% line with figs 
-      \begin{tikzpicture}
-
-        \draw[fill=green!20] (0,0.5) rectangle (0.25, 0.25);
-        \draw[fill=red!20] (0,0.25) rectangle (0.25, 0.0);
-        \draw[fill=orange!20] (0,0.0) rectangle (0.25, -0.25);
-        \draw[fill=blue!20] (0,-0.25) rectangle (0.25, -0.5);
-        \draw[step=.25] (0,-0.5) grid (0.25, 0.5);
-      \end{tikzpicture}
-      
-                &\begin{tikzpicture}
-                          \node at (-0.3,-0) {$=$};
-        \draw[fill=green!20] (0,0.5) rectangle (1.5, 0.25);
-        \draw[fill=red!20] (0,0.25) rectangle (1.5, 0.0);
-        \draw[fill=orange!20] (0,0.0) rectangle (1.5, -0.25);
-        \draw[fill=blue!20] (0,-0.25) rectangle (1.5, -0.5);
-        \draw[step=.25] (0,-0.5) grid (1.5, 0.5);
-      \end{tikzpicture}
-
-      &\begin{tikzpicture}
-        \node at (-0.3,-0.25) {$\times$};
-        \draw[step=.25] (0,-0.75) grid (0.25, 0.75);
-      \end{tikzpicture}\\[2ex]
-      %%%%%
-      \color{green!60}$y_1$ &\color{green}$\ =\ \W_{1,:}$ &$\  \times\ \x$\\
-      \color{red!60}$y_2$ &\color{red!60}$\ =\ \W_{2,:}$ &$\  \times\ \x$\\
-      \ $\cdots$ &\ $\cdots$ &$\ \cdots$
-    \end{tabular}
-\end{center}
-In terms of dimension: 
-\begin{displaymath}
-  \textrm{With } \left\{
-    \begin{array}{ll}
-      \x  &: (L_1 \times 1)\\
-      \W  &: (L_2 \times C_2)\\
-      \seq{y} &: (L_2 \times 1)
-    \end{array} \right. \Rightarrow (\W\x) :
-   (L_2 \times 1)= (L_2 \times \underbrace{\xcancel{C_2) (L_1 } }_{\color{red}C_2=L_1} \times 1)
-\end{displaymath}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%%%%%%%% use the cancel package 
-\begin{frame}{Matrix-matrix product}
-  $\seq{X}$ is a matrix of 2 columns, 2 vectors as $\x$: 
-  \begin{center}
-    \begin{tabular}{rllr}
-      $ \seq{Y}$ &\ $=\W$ &$\ \times\ \seq{X}$ \\[2ex]
-      %%%%%%%% line with figs 
-      \begin{tikzpicture}
-        % matrix Y 
-        \draw[fill=green!20] (0,0.5) rectangle (0.5, 0.25);
-        \draw[fill=red!20] (0,0.25) rectangle (0.5, 0.0);
-        \draw[fill=orange!20] (0,0.0) rectangle (0.5, -0.25);
-        \draw[fill=blue!20] (0,-0.25) rectangle (0.5, -0.5);
-        \draw[step=.25] (0,-0.5) grid (0.5, 0.5);
-        \draw[draw=red,very thick] (0.25,-0.5) rectangle (0.5, 0.5);
-      \end{tikzpicture}
-      % matrix W
-                &\begin{tikzpicture}
-                          \node at (-0.3,-0) {$=$};
-        \draw[fill=green!20] (0,0.5) rectangle (1.5, 0.25);
-        \draw[fill=red!20] (0,0.25) rectangle (1.5, 0.0);
-        \draw[fill=orange!20] (0,0.0) rectangle (1.5, -0.25);
-        \draw[fill=blue!20] (0,-0.25) rectangle (1.5, -0.5);
-        \draw[step=.25] (0,-0.5) grid (1.5, 0.5);
-      \end{tikzpicture}
-      % Matrix X 
-      &\begin{tikzpicture}
-        \node at (-0.3,-0.25) {$\times$};
-        \draw[step=.25] (0,-0.75) grid (0.5, 0.75);
-        \draw[draw=red,very thick] (0.25,-0.75) rectangle (0.5, 0.75);
-      \end{tikzpicture}
-      %%%%%
-    \end{tabular}
-\end{center}
-In terms of dimension: 
-\begin{displaymath}
-  \textrm{With } \left\{
-    \begin{array}{ll}
-      \seq{X}  &: (L_1 \times C_1)\\
-      \W  &: (L_2 \times C_2)\\
-      \seq{y} &: (L_2 \times C_1)
-    \end{array} \right. \rightarrow
-   (L_2 \times C_2)= (L_2 \times \underbrace{\xcancel{C_2) (L_1 } }_{\color{red}C_2=L_1} \times C_1)
-\end{displaymath}
-\end{frame}
 
 
 

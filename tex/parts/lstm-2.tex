@@ -1,0 +1,134 @@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{Introduction to LSTM}
+\framesubtitle{The standard recurrent cell}
+\begin{columns}
+  \begin{column}{0.35\textwidth}
+    \begin{itemize}
+    \item A recurrent cell is neural network layer
+    \item Conveyor belt : the hidden state
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.6\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{../figs/LSTM3-SimpleRNN}
+    \end{center}
+    Lines carry a vectors
+  \end{column}
+\end{columns}
+\begin{flushright}\vfill
+  Based on
+  \url{http://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+\end{flushright}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{Introduction to LSTM}
+\framesubtitle{The LSTM cell}
+    \begin{center}
+      \includegraphics[width=\textwidth]{../figs/LSTM3-chain}
+    \end{center}
+    \begin{itemize}
+    \item LSTM introduces a second channel:\\ \important{the cell state}
+    \item The cell is now four neural layers, interacting in a very special way
+    \item It acts as a memory
+    \item Gates control the memory
+    \end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{Roadmap of inference}
+  \begin{enumerate}
+  \item Memory organization
+    \begin{enumerate}
+    \item what should be kept ? 
+    \item what shoud be updated ? 
+    \end{enumerate}
+  \item Update the cell state
+  \item Filter the state to provide the "hidden" state 
+  \end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{LSTM : Control flow - 1}
+  \framesubtitle{What should be forgotten from the previous cell  state ? }
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{../figs/LSTM-1}
+  \end{center}
+      \begin{block}{Action}
+        The sigmoid (forget gate) answers for each component:
+        \begin{itemize}
+        \item $1$: to keep it,
+        \item $0$ to forget it, or
+        \item a value in-between to mitigate its influence
+        \end{itemize}
+      \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{LSTM : Control flow - 2}
+  \framesubtitle{What should be taken into account ? }
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{../figs/LSTM-2}
+  \end{center}
+      \begin{block}{Actions}
+        \begin{itemize}
+        \item Create the update $\tilde{C}_t$ of the cell state
+        \item and its contribution $i_t$ (the input gate with a sigmoid activation)
+        \end{itemize}
+      \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{LSTM : Control flow - 3}
+  \framesubtitle{Write the new state}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{../figs/LSTM-3}
+  \end{center}
+      \begin{block}{Actions}
+        \begin{itemize}
+        \item Merge the old cell state modified by the forget gate
+        \item with the new input 
+        \end{itemize}
+      \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{frame}{LSTM : Control flow - 4}
+  \framesubtitle{Write the new hidden state}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{../figs/LSTM-4}
+  \end{center}
+      \begin{block}{Actions}
+        \begin{itemize}
+        \item Decide what parts of the (filtered) cell state to output $o_t$ 
+        \item Compute the hidden state
+        \end{itemize}
+      \end{block}
+\end{frame}
+
+\begin{frame}{LSTM summary}
+  \begin{block}{A special kind of recurrent architecture}
+%    The internal cell state allows the model to: 
+    \begin{itemize}
+    \item keep or skip information in  memory
+    \item to reset or mitigate the long-term memory
+    \end{itemize}
+  \end{block}
+  \begin{block}{Consequences: an efficient model of sequences}
+    \begin{itemize}
+    \item Overcome the vanishing gradient issue 
+    \item Very promising results in generation
+    \end{itemize}
+  \end{block}
+  \begin{block}{State of the art}
+    \begin{itemize}
+    \item Stacked LSTM and Bi-recurrent encoder
+    \item Variants: Gated recurrent units (GRU)~\cite{Cho14Learning} or a more complicated  one~\cite{Gers00Recurrent}
+      % \item Some recent comparisons~\cite{Jozefowicz15Empirical,greff2015lstm}
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+

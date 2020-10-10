@@ -1,0 +1,73 @@
+\begin{frame}{Unsupervised Pre-training of Word Embeddings}
+  How to learn word representation based on the observation of raw texts ?
+  \begin{block}{Distributional representations}
+    \begin{quote}
+    You shall know a word by the company it keeps\\  (Firth, J. R., 1957)
+  \end{quote}
+  Words are similar if they appear in similar contexts (Harris 1954).
+\end{block}
+\begin{block}{Count-based Methods}
+  \begin{itemize}
+  \item Create a word-context count matrix 
+  \item Count the number of co-occurrences of word/context, with rows
+    as word, columns as contexts
+  \item Maybe weight with pointwise mutual information 
+  \item Reduce dimensions using SVD 
+  \item Measure their closeness using cosine similarity (or others)
+\end{itemize}
+\end{block}
+Scalability is the bottleneck ! 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Context Bag of Words (CBOW)}
+  \framesubtitle{Word2vec - first flavor}
+  \begin{center}
+    \begin{displaymath}
+      \begin{array}{lcccccc}
+        \x=&( &\textrm{southern} &\textrm{trees}  &\textrm{strange} &\textrm{fruit}  &)\\
+           &&\downarrow & \downarrow & \downarrow & \downarrow & \\
+        \textrm{look-up}&&\wemb &\wemb &\wemb &\wemb & \\
+           &&  \vct{w}_{-2} &  \vct{w}_{-1} &  \vct{w}_{+1} &  \vct{w}_{+2} &\\
+           && \downarrow &\downarrow &\downarrow &\downarrow & \\
+        \textrm{composition} &&\important{\vct{w}_{southern}}+ &\important{\vct{w}_{trees}}+ &\important{\vct{w}_{strange}}+ &\important{\vct{w}_{fruits}} &\rightarrow\important{\seq{h}} \\[4ex]
+        \textrm{Prediction}   &&\multicolumn{4}{c}{\textrm{softmax}(\seq{W}_{o} \times \seq{h})} &\rightarrow\important{\textrm{bear ?}}
+      \end{array} 
+    \end{displaymath}
+  \end{center}
+\end{frame}
+
+\begin{frame}{CBOW: details}
+  \begin{block}{Fast pre-training of word embeddings}
+    \begin{itemize}
+    \item Introduced in~\cite{Mikolov13Word2Vec} as a simplification
+      of \cite{Bengio01} (neural language model)
+    \item Trained with negative sampling (Closed to Noise Contrastive Estimation~\cite{Gutmann10NCE})
+    \item An efficient and tractable approximation of the count based method~\cite{Melamud16PMI}
+    \end{itemize}
+  \end{block}
+  \begin{block}{Other flavor}
+    \begin{itemize}
+    \item Skip-gram~\cite{Mikolov13Word2Vec}
+    \item Glove~\cite{Pennington14GLOVE}
+    \item Fastext~\cite{Joulin17Bag}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Application to protein embeddings}
+  \framesubtitle{From \cite{Asgari15Continuous}}
+  \begin{block}{$n$-gram modeling of protein informatics}
+    % usually an overlapping window of 3 to 6 residues is used. Instead of taking overlapping windows,
+    \begin{itemize}
+    \item Generation of 3 lists of shifted non-overlapping ``words''
+    \item The procedure is applied on all 546,790 sequences in Swiss-Prot: a corpus with $546,790 \times 3 = 1,640,370$ sequences of $3$-grams 
+    \item A $3$-gram is a “biological” word consisting of 3 amino acids.
+   \end{itemize}
+ \end{block}
+ 
+ \begin{center}
+   \includegraphics[width=0.6\textwidth]{../figs/protvec}    
+ \end{center}
+\end{frame}

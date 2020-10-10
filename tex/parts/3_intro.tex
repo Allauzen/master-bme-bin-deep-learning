@@ -1,0 +1,154 @@
+\begin{frame}
+  \frametitle{Two layers fully connected: a linear separation}
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{scope}
+        % input
+        \node (nx) at (-0.7,0.625){$\x$}; %
+        \foreach \y in {0,0.25,...,1.25}{ 
+          \draw (0,\y) circle  (0.1cm);%
+        }
+        \draw (-0.2,-0.2) rectangle (0.2,1.5);
+        \draw[snake=brace] (-0.4,-0.125) -- (-0.4,1.375); 
+        % output
+        \foreach \y in {0.25,0.5,...,1}{ 
+          \draw (1.5,\y) circle  (0.1cm);%
+        }
+        \draw (1.3,0.05) rectangle (1.7,1.2);
+        \draw (0.2,-0.2) -- (1.3,0.05); 
+        \draw (0.2,1.5) -- (1.3,1.2);
+        \draw[dotted, thick] (0.2,1.5) -- (1.3,0.05);
+        \draw[dotted,thick] (0.2,-0.2) -- (1.3,1.2); 
+        \draw[snake=brace] ( 1.8, 1.2) --(1.8, 0.05) ; 
+        \node[anchor=west] (ny) at (1.9,0.625){$\seq{y}=f(\W \x)$}; %
+        \node[anchor=west] (nW) at (0.83,-0.75){$\W$};%
+        \node[anchor=west] (nW) at (0.83,-1.25) {$\W_{k,:}=\seq{w_k}^t$}; %
+        \draw[->]  (0.83,-0.7) -- (0.83,0.6);%
+      \end{scope}
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+      %% matrix view 
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+      \only<2->{
+        \begin{scope}[xshift=6cm,yshift=0.15cm]
+          
+          \draw[->] (-1.75,0.5) -- (-0.7,0.5);
+          \draw[step=.25] (0,-0) grid (1.5, 1);%
+          \draw[step=.25] (1.99,-0.25) grid (2.25, 1.25 );%
+          \draw[step=.25] (2.99,-0) grid (3.25, 1 );%
+          % oper
+          \node[anchor=west] (times) at (1.4, 0.5) {$\times$};
+          \node[anchor=west] (equals) at (2.4, 0.5) {$=$};
+          % names
+          \node[anchor=west] (f) at (-0.6, 0.5) {$f\Big($};
+          \node[anchor=west] (fe) at (2.2, 0.5) {$\Big)$};
+          \node[anchor=west] (W) at (0.25, -0.5) {$\seq{W}$};
+          \node[anchor=west] (x) at (1.75, -0.5) {$\seq{x}$};
+          \node[anchor=west] (x) at (3, -0.5) {$\seq{y}$};
+        \end{scope}
+      }
+    \end{tikzpicture}
+  \end{center}
+  \pause\pause
+  {
+    \begin{columns}
+      \column{0.5\textwidth}
+      Activation $f$:
+      \begin{itemize}
+      \item $f$ is usually a non-linear function
+      \item $f$ is a component wise function
+      \item tanh, sigmoid, relu, ...
+      \end{itemize}
+      \column{0.5\textwidth}
+      Dimensions: 
+      \begin{itemize}
+      \item $\x: \nfeats \times 1 $
+      \item $\seq{W}: \nclasses \times \nfeats $
+      \item $\seq{y}: (\nclasses \times \xcancel{ \nfeats) \times (  \nfeats }
+        \times 1 ) =\nclasses \times 1 $
+      \end{itemize}
+    \end{columns}
+    \textit{e.g} the softmax function:
+    $$      
+    y_k = P(c=k|\x) = \frac{e^{\scal{\seq{w_k}}{\x}} }{\sum_{k'}e^{\scal{\seq{w_{k'}}}{\x}}}
+    = \frac{e^{\W_{k,:}\x}}{\sum_{k'} e^{\W_{k',:}\x}}
+    $$   
+  }
+\end{frame}
+
+
+\begin{frame}{From linear to non-linear case}
+  \begin{columns}
+    \begin{column}{0.7\textwidth}
+      \begin{center}
+        \begin{tabular}[h]{lclclr}
+          \color{red}\inp\lid{1} & & \inp\lid{2}  && \\
+          \color{red}\layer &\connection &\layer &\connection &\layer \\[-2ex]
+          & \raisebox{\raiseW}{\W\lid{1}} &\outp\lid{1}   &\raisebox{\raiseW}{\W\lid{2}} &\color{red}\outp\lid{2}: output 
+        \end{tabular}
+      \end{center}
+     \end{column}
+    \begin{column}{0.3\textwidth}
+      $$\params=(\W\lid{1},\W\lid{2})$$
+      Trained by back-propagation of the gradient
+    \end{column}
+  \end{columns}
+  \begin{block}{Universal approximation theorem}
+
+    \begin{quote}
+      a feed-forward network with a single hidden layer containing a
+      finite number of neurons can approximate continuous functions on
+      compact subsets of $\real^n$, under mild assumptions on the
+      activation function. (...)
+    \end{quote}
+    \begin{flushright}
+      \cite{Cybenko89Approximation}
+    \end{flushright}
+    However, it does not touch upon the algorithmic learnability of those parameters.
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Overfitting}
+  \framesubtitle{The danger of the over-parametrization}
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{../figs/overfitting-1}\hfill
+    \includegraphics[width=0.4\textwidth]{../figs/overfitting-2}
+  \end{center}
+  {\small Source: Wikipedia}
+\end{frame}
+
+
+
+\begin{frame}{Multi-layer neural network (feed-forward)}
+  \begin{block}{One layer, indexed by $l$}
+    \begin{columns}
+      \begin{column}{0.3\textwidth}
+        \begin{tabular}[h]{lcl}
+          \inp\lid{l} & & \\
+          \layer &\connection &\layer\\[-2ex]
+          & \raisebox{\raiseW}{\W\lid{l}} &\outp\lid{l} 
+        \end{tabular} 
+      \end{column}
+      \begin{column}{0.7\textwidth}
+        \begin{itemize}
+        \item \inp\lid{l}: input of the layer $l$
+        \item \outp\lid{l} =  $f$\lid{l}(\W\lid{l} \inp\lid{l})
+        \item stacking layers:  \outp\lid{l} $=$ \inp\lid{l+1} 
+        \item \inp\lid{1}  = a data example
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  \end{block}
+  
+  \vspace{-2ex}
+  \begin{center}
+    \begin{tabular}[h]{lclclclclcl}
+      \color{red}\inp\lid{1} & & \inp\lid{2}  && \inp\lid{3} & &\inp\lid{L} \\
+      \color{red}\layer &\connection &\layer &\connection &\layer &\dotted &\layer &\connection &\color{red}\layer \\[-2ex]
+      & \raisebox{\raiseW}{\W\lid{1}} &\outp\lid{1}   &\raisebox{\raiseW}{\W\lid{2}} &\outp\lid{2}  &&\outp\lid{L-1}&\raisebox{\raiseW}{\W\lid{L}} &\color{red}\outp\lid{L}: output 
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+
+

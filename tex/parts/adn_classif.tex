@@ -1,0 +1,126 @@
+\begin{frame}{Problem setting}
+    \begin{block}{Sequence classification task / property identification}
+    \begin{center}
+      \begin{tikzpicture}
+        %%%%%%%%%%%%%%%%%%%%% 
+        \node[anchor=east,draw=gray,text width=0.3\textwidth,align=center] (review) at
+        (0,0) {\cga~\cgt~\cgc~\cgg~\cga~\cgt~\cgt~\cgc\\$\cdots$~\cgg~\cgt~\cga~\cga~\cgt~\cgc~\cgg};
+        %%%%%%%%%%%%%%%%%%%%% 
+        \node[anchor=west] (txt) at (0.1,0) {$: \ \x \in \real^{\nfeats} \ \longrightarrow \ \class \in\{0, 1\}$};
+      \end{tikzpicture}
+      $$\dataset= (\seq{s}\sid{i} , \classi )_{i=1}^{\nsamples}$$ 
+    \end{center}
+  \end{block}
+  \begin{block}{Classification assumption}
+    \begin{itemize}
+    \item The input $\seq{s}\sid{i}$ can be "summarized" in a vector $\exi$ 
+    \item The classification is performed by a linear classification (layer)
+    \item The loss can be the binary cross entropy 
+    \item How can we process and transform $\seq{s}\sid{i}$ to build  $\exi$ ? 
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Feature engineering}
+  \framesubtitle{Count based summarization / bag of features}
+  \begin{center}
+    \cga~\cgt~\cgc~\cgg~\cga~\cgt~\cgc~\cgg~\cgg~\cgt~\cga~\cga~\cgt~\cgc~\cgg
+  \end{center}
+  \begin{columns}
+    \column{0.25\textwidth}
+    \begin{center}
+      \begin{tabular}{l|c}
+        $\vocab$  &count    \\\hline
+        \cga    &4 \\
+        \cgc    &3 \\
+        \cgg    &4 \\
+        \cgt    &4 \\\hline
+      \end{tabular}
+    \end{center}\pause
+    \column{0.1\textwidth}
+    {\Large$$+$$}
+    \column{0.25\textwidth}
+    \begin{center}
+      \begin{tabular}{l|c}
+        ...$\vocab$  &count    \\\hline
+        \cga \cga    &1 \\
+        \cga \cgc    &0 \\
+        \cga \cgg    &0 \\
+        \cga \cgt    &3 \\\hline
+        \cgc \cga    &0 \\
+        \cgc \cgc    &0 \\
+        \cgc \cgg    &1 \\
+        \cgc \cgt    &0 \\\hline
+      \end{tabular}
+    \end{center}
+    \column{0.1\textwidth}
+    {\Large$$+$$}
+    \column{0.25\textwidth}
+    \begin{center}
+      \begin{tabular}{l|c}
+        ...$\vocab$  &count    \\\hline
+        \cgg \cga    &1 \\
+        \cgg \cgc    &0 \\
+        \cgg \cgg    &1 \\
+        \cgg \cgt    &0 \\\hline
+        \cgt \cga    &1 \\
+        \cgt \cgc    &3 \\
+        \cgt \cgg    &0 \\
+        \cgt \cgt    &0 \\\hline
+      \end{tabular}
+    \end{center}
+  \end{columns}
+  \begin{center}
+    $\Rightarrow \x$ of dimension $m+m^2$, with $m$ the number of symbols
+  \end{center}
+\end{frame}
+
+\begin{frame}{$k$-mers representation (\textit{aka} $n$-grams)}
+  \framesubtitle{From \cite{Lee11DNA}}
+   a $k$-mers are oligomers of length $k$
+  \begin{block}{Transform $\seq{s}$ to $\x$ with $k$-mers encoding}
+    \begin{itemize}
+    \item Count the  set of $k$-mers of varying length (3–10 bp) in $\seq{s}$
+    \item Generate a vector of $d$ dimensions
+      $$
+      \nfeats =  4^4 + 4^5 + 4^6 + 4^7 + 4^8 + 4^9 + 1 (\textrm{for padding}) =  349441
+      $$
+    \end{itemize}
+  \end{block}
+  \begin{block}{Linear (or not) classifier (SVM) }
+    The model is parametrized with $\w$:
+    $$
+    \scal{\w}{\x} = \sum_{j=0}^{\nfeats} \underbrace{\color{red}w_j}_{\color{red}\textrm{representation of the oligomer}} \times \underbrace{\color{green!70!black}x_j}_{\color{green!70!black}\textrm{its count}}
+    $$
+  \end{block}
+\end{frame}
+
+\begin{frame}{ADN sequence classifier}
+  The goal is to design a way to represent the sequence as a vector:
+%  \begin{block}{Subsequence of discrete symbols}
+    \begin{itemize}
+    \item The oligomer $j$ is represented by  $w_j$: its contribution to the decision
+    \item each oligomer of length $k$ is considered as a discrete symbol
+    \item As $k$ increases, observations are sparse
+    \item No interaction between oligomers (except the value of $w_j$):
+      % CATTGTYATGCAAAT
+      % \cgc\cga\cgt\cgt\cgg\cgt\cgy\cga\cgt\cgg\cgc\cga\cga\cga\cgt
+      \begin{center}
+      \begin{tabular}{llllr}
+        \cgc&\cga&\cgt\cgt\cgg\cgt&     &$\rightarrow$ 1.45\\
+            &\cga&\cgt\cgt\cgg\cgt&\cgc &$\rightarrow$ 1.19\\
+        \cgc&\cgt&\cgt\cgt\cgg\cgt&     &$\rightarrow$ 1.06
+      \end{tabular}
+    \end{center}
+  \item The count summarizes its contribution.
+  \end{itemize}
+ % \end{block}
+  \begin{block}{Roadmap}
+    \begin{itemize}
+    \item Symbol embeddings
+    \item Convolution 
+    \item Pooling
+    \end{itemize}
+  \end{block}
+\end{frame}

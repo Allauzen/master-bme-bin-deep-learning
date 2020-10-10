@@ -1,0 +1,77 @@
+% Regularization  + Dropout 
+
+\begin{frame}{Regularization $l^2$ or gaussian prior or weight decay}
+  The basic way: 
+  $$
+  \fullloss = \sum_{i=1}^{\nsamples} \ploss(\params,\exi,\classi)  {\color{red}+ \frac{\lambda}{2} || \params||^2}
+  $$
+  \begin{itemize}
+  \item The second term is the {\color{red}regularization term}. 
+  \item Each parameter has a gaussian prior : $
+    \mathcal{N}(0,1/\lambda)$.
+  \item $\lambda$ is a hyperparameter. 
+  \item  The update has the form:
+    $$
+    \params = (1+\eta_t\lambda) \params - \eta_t \pgrad{\params} 
+    $$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Dropout}
+  \framesubtitle{A new regularization
+    scheme~\cite{Srivastava14Multimodal}}
+  \begin{columns}
+    %%%%%%%%%%%%%%%%%%%%%%
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \includegraphics[width=1\textwidth]{../figs/dropout2}
+      \end{center}
+    \end{column}
+    %%%%%%%%%%%%%%%%%%%%%%
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+      \item  For each training example:  randomly turn-off the neurons
+        of hidden units (with $p=0.5$)
+      \item  At test time, use each neuron scaled down by $p$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  %%%%%%%%%%%%%%%%%%%%%%
+  \begin{itemize}
+  \item  Dropout serves to separate effects from strongly correlated
+    features and 
+  \item prevents co-adaptation between units
+  \item It can be seen as averaging different models that share parameters.
+  \item It acts as a powerful regularization scheme. 
+  \end{itemize}
+\end{frame}
+% Dropout is known to work well, although not always:
+
+%     In vision tasks, input features are commonly dense, while in our
+%     task input features are sparse and labels are noisy. In the dense
+%     setting, dropout serves to separate effects from strongly
+%     correlated features, resulting in a more robust classifier. But in
+%     our sparse, noisy setting adding in dropout appears to simply
+%     reduce the amount of data available for learning.
+
+
+\begin{frame}{Dropout - implementation}
+  The layer should keep: 
+  \begin{itemize}
+  \item $\W\lid{l}$: the parameters
+  \item $f\lid{l}$: its activation function
+  \item $\inp\lid{l}$: its input
+  \item $\seq{a}\lid{l}$: its pre-activation associated to the input
+  \item $\vdlta\lid{l}$: for the update and the back-propagation to the layer $l-1$
+  \item {\color{red} $\seq{m}\lid{l}$: the dropout mask}, to be applied
+    on $\inp\lid{l}$ 
+  \end{itemize}
+  \begin{block}{Forward pass}
+        For $l=1$ to $(L-1)$
+    \begin{itemize}
+    \item Compute $\outp\lid{l}=f\lid{l}(\W\lid{l}\inp\lid{l})$
+    \item $\inp\lid{l+1} =\outp\lid{l} = \outp\lid{l} \circ \seq{m}\lid{l}$
+    \end{itemize}
+    $\outp\lid{L}=f\lid{L}(\W\lid{L}\inp\lid{L})$
+  \end{block}
+\end{frame}

@@ -1,0 +1,131 @@
+\begin{frame}{pytorch in three concepts}
+  \begin{block}{A \textit{Tensor} is a tensor}
+    \begin{itemize}
+    \item Similar to numpy’s \textit{ndarrays}, but can be used on a
+      GPU to accelerate computing.
+    \item A node of a computation graph, holding:
+      \begin{itemize}
+      \item the gradient w.r.t to it self (back-propagation)
+      \item a reference  to its creator
+      \end{itemize}
+    \end{itemize}
+  \end{block}
+
+
+  \begin{block}{\textit{Autograd}}
+    Package for building computational graphs out of Tensors, and
+    automatically computing gradients
+  \end{block}
+  
+  \begin{block}{Module}
+    A neural network layer,  may store state or
+    learnable  Function (i.e with parameters)
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{An example in pytorch}
+  
+  \begin{minted}{python}
+    import torch as th
+    # The model 
+    D_in=2  # input size : 2 
+    D_out=1 # output size: one value 
+    model = th.nn.Sequential(
+       th.nn.Linear(D_in, D_out),
+       th.nn.Sigmoid()    
+       )
+    loss_fn = th.nn.BCELoss()
+    # Optimizer will update  the weights of the model. 
+    lr0 = 1e-4 
+    optimizer = torch.optim.SGD(model.parameters(),
+                       lr=lr0) 
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{An example in pytorch - 2}
+  \begin{minted}{python}
+    for t in  range(10): 
+       # Forward pass: compute predicted y by passing x.  
+       y_pred = model(x)
+       # Compute and print loss.  
+       loss = loss_fn(y_pred, y) 
+       print(t, loss.data[0])
+       # Optim in two steps
+       optimizer.zero_grad()
+       # Backward pass: compute gradient of the loss wrt parameters 
+       loss.backward()
+       # Calling the step function on an Optimizer makes an update 
+       optimizer.step()
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}{Three kinds of \textit{Module}}
+
+  
+  \begin{block}{Linear}
+    \begin{itemize}
+    \item \textit{Linear} is a \textit{Module} for a linear
+      transformation.
+    \item The parameters: a \textit{Tensor} $\W$
+    \item Forward $\x\rightarrow \W\x$
+    \end{itemize}
+  \end{block}
+
+
+  \begin{block}{Sigmoid}
+    \begin{itemize}
+    \item \textit{Sigmoid} is a \textit{Module} for a pointwise function
+    \item No parameters
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Sequential}
+    \begin{itemize}
+    \item \textit{Sequential} is a container \textit{Module} 
+    \item It contains a sequence of \textit{Module}, i.e a feed-forward NNet
+    \end{itemize}
+  \end{block}
+  \begin{center}
+    Look at the \textit{torch.nn} doc for many examples
+  \end{center}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{From CPU to GPU}
+  \begin{minted}{python}
+    # This vector is stored on cpu (+any operation you do on it)
+    a = torch.DoubleTensor([1., 2.])
+    # The same for GPU
+    a = torch.FloatTensor([1., 2.]).cuda()
+    a = torch.cuda.FloatTensor([1., 2.])
+    # it will be on the default device: 
+    torch.cuda.current_device()
+    #####
+    # For the model: 
+    model = model.cuda()
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Define your module}
+  \begin{minted}{python}
+    class LogisticRegression(th.nn.Module):
+        def __init__(self,D_in):
+           super(LogisticRegression, self).__init__()
+           self.lin = th.nn.Linear(D_in, 1)
+           self.out = th.nn.Sigmoid()    
+    
+        def forward(self, x): 
+           a = self.lin(x)
+           return self.out(a)
+           
+    mod = LogisticRegression(D_in=2)
+  \end{minted}
+\end{frame}
+
+
+
+

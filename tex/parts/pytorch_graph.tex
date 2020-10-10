@@ -1,0 +1,419 @@
+\begin{frame}
+  \frametitle{Some useful libraries}
+  \begin{block}{Theano}
+    Written in python by the LISA (Y. Bengio and I. Goodfellow),
+    low-level API.
+  \end{block}
+  \begin{block}{TensorFlow and Keras}
+    The Google library with python API + high level API
+  \end{block}
+  \begin{block}{pyTorch}
+    The Facebook library with python API 
+  \end{block}
+  \begin{block}{And others}
+    Caffe, MXNet, CNTK, Chainer, ...
+  \end{block}
+  \begin{itemize}
+  \item CPU/GPU
+  \item Automatic differentiation based on computational graph
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Computation graph}
+  A convenient way to represent  a  complex mathematical expressions: 
+  \begin{itemize}
+  \item  each node is an operation or a variable
+  \item an operation has some inputs / outputs made of variables
+  \end{itemize}
+  \begin{block}{Example 1 : A single  layer network}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{tikzpicture}
+          \vnode (x1) at (0,0) {$\x\lid{1}$}; % 
+          \vnode (W1) at  (1.5,-1.5) {$\W\lid{1}$};  % 
+          \funnode (dot1) at (1.5,0) {$\times$};%
+          \funnode (f1) at (3,0) {$f\lid{1}$}; 
+          \vnode (y1) at (4.5,0)  {$\outp\lid{1}$}; 
+          \draw[->] (x1) -- (dot1); 
+          \draw[->] (dot1) -- (f1); 
+          \draw[->] (W1) -- (dot1); 
+          \draw[->] (f1) -- (y1);
+        \end{tikzpicture}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+        \item Setting $\inp\lid{1}$ and $\W\lid{1}$
+        \item Forward pass $\rightarrow \outp\lid{1}$
+        $$ 
+        \outp\lid{1} = f\lid{1}(\W\lid{1}\inp\lid{1})
+        $$
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  \end{block}
+  \begin{block}{Remark}
+    Some toolkit refers to variable as node, and function as edge. 
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Building a computation graph}
+  \begin{quote}
+    Variables (eq. Tensors) flow through a D.A.G
+  \end{quote}
+  \begin{block}{A variable is a  \textit{Tensor}}
+    A \textit{Tensor} stores: 
+    \begin{itemize}
+    \item the values (as \textit{numpy.array}); 
+    \item a link to its creator;
+    \item (optionally) the gradient values (as a \textit{numpy.array} of same size);
+    \end{itemize}
+    The creator is a function or tensor operation 
+  \end{block}
+  \begin{block}{Function}
+    A tensor operation that takes:
+    \begin{itemize}
+    \item several (or zero) input tensors,
+    \item and output one new tensor as a result. 
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Ex: the logistic regression model}
+  \framesubtitle{The computation graph}
+  \begin{center}
+    \begin{tikzpicture}
+      \vnode (x2) at (0,0) {$\x_i$}; % 
+      \vnode (W2) at  (1.5,-1.5) {$\W\lid{1}$};  % 
+      \funnode (dot2) at (1.5,0) {$\times$};%
+      \funnode (f2) at (3,0) {$f\lid{1}$}; 
+      \funnode (loss) at (4.5,0) {$\ploss$}; 
+      \vnode (label) at  (4.5,-1.5) {$\classi$};  % 
+      \vnode (outloss) at  (7,0) {$\ploss(\x_i,\classi,\params)$};  % 
+      \draw[->] (x2) -- (dot2); 
+      \draw[->] (dot2) -- (f2); 
+      \draw[->] (W2) -- (dot2); 
+      \draw[->] (f2) -- (loss);
+      \draw[->] (label) -- (loss);
+      \draw[->] (loss) -- (outloss);
+    \end{tikzpicture}
+  \end{center}
+  \begin{itemize}
+  \item $f\lid{1}$ is the sigmoid ($\sigma$) function
+  \item the loss is the binary log-loss (a.k.a binary cross
+    entropy):
+    $$
+    \ploss(\inp, \class, \params=\W)  %
+    = \classi \log y + (1-\classi) \log (1-y),
+    $$
+  \item with $y$, a scalar, the output of $f\lid{1}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Ex: the logistic regression model}
+  \framesubtitle{In numpy \textit{vs} pytorch}
+  \begin{center}
+    \begin{tikzpicture}{scale=0.9}
+      \vnode (x2) at (0,0) {$\x_i$}; % 
+      \vnode (W2) at  (1.5,-1.5) {$\W\lid{1}$};  % 
+      \funnode (dot2) at (1.5,0) {$\times$};%
+      \funnode (f2) at (3,0) {$f\lid{1}$}; 
+      \funnode (loss) at (4.5,0) {$\ploss$}; 
+      \vnode (label) at  (4.5,-1.5) {$\classi$};  % 
+      \vnode (outloss) at  (7,0) {$\ploss(\x_i,\classi,\params)$};  % 
+      \draw[->] (x2) -- (dot2); 
+      \draw[->] (dot2) -- (f2); 
+      \draw[->] (W2) -- (dot2); 
+      \draw[->] (f2) -- (loss);
+      \draw[->] (label) -- (loss);
+      \draw[->] (loss) -- (outloss);
+    \end{tikzpicture}
+  \end{center}
+  \begin{columns}
+    \small 
+    \column{0.4\textwidth}
+  \begin{minted}{python}
+    import numpy as np
+    # explicite bias 
+    W = np.random.randn(1,D+1) 
+    # inference
+    # x the input:  np.array
+    a = W@x 
+    y = 1/(1+np.exp(-a))
+    # a and y are np.array
+    # loss: c (target) np.array~~~
+    l = -c*np.log(y)
+        - (1-c)*np.log(1-y) 
+  \end{minted}
+  \column{0.6\textwidth}
+  \begin{minted}{python}
+    import torch as th
+    # explicite bias 
+    W = th.randn(1,D+1,requires_grad=True)
+    # inference
+    # x is a th.Tensor 
+    a = W@x # or W.matmul(x)
+    y = 1/(1+th.exp(-a)) 
+    # a and y are th.Tensor
+    # loss: c (target), a th.Tensor
+    l = -c*th.log(y)
+        - (1-c)*th.log(1-y) 
+  \end{minted}
+\end{columns}
+\end{frame}
+
+
+
+
+
+ 
+\begin{frame}{Ex: the logistic regression model}
+  \framesubtitle{Compute the gradient}
+       \begin{center}
+          \begin{tikzpicture}{scale=0.9}
+          \vnode (x2) at (0,0) {$\x_i$}; % 
+          \vnode (W2) at  (1.5,-1.5) {$\W\lid{1}$};  % 
+          \funnode (dot2) at (1.5,0) {$\times$};%
+          \funnode (f2) at (3,0) {$f\lid{1}$}; 
+          \funnode (loss) at (4.5,0) {$\ploss$}; 
+          \vnode (label) at  (4.5,-1.5) {$\classi$};  % 
+          \vnode (outloss) at  (7,0) {$\ploss(\x_i,\classi,\params)$};  % 
+          \draw[->] (x2) -- (dot2); 
+          \draw[->] (dot2) -- (f2); 
+          \draw[->] (W2) -- (dot2); 
+          \draw[->] (f2) -- (loss);
+          \draw[->] (label) -- (loss);
+          \draw[->] (loss) -- (outloss);
+        \end{tikzpicture}
+        \end{center}
+        The goal :
+        $$\frac{\partial \ploss}{\partial \W\lid{1}} = \frac{\partial
+          \ploss}{\partial \outp}  \frac{\partial \outp}{\partial
+          \seq{a}} \frac{\partial \seq{a}}{\partial \W\lid{1}}  $$
+        Gradient computation: 
+        $$ \inlinefnode{\ploss} \rightarrow
+        % 
+        {\color{red} \frac{\partial \ploss}{\partial \outp}} \rightarrow
+        % 
+        \inlinefnode{$f$}  \rightarrow
+        %
+        \frac{\partial \ploss}{\partial \outp}  {\color{red} \frac{\partial \outp}{\partial
+          \seq{a}}} \rightarrow
+        %
+        \inlinefnode{$\times$}  \rightarrow
+        %
+        \frac{\partial
+         \ploss}{\partial \outp}  \frac{\partial \outp}{\partial
+        \seq{a}}  {\color{red} \frac{\partial \seq{a}}{\partial \W\lid{1}} }
+      $$
+      \begin{center}
+%        In pytorch : \textit{l.backward()} ! 
+      \end{center}
+\end{frame}
+
+
+\begin{frame}{The computation graph in both directions}
+  % Use funnode and vnode see common_nnet.tex 
+  %
+  \begin{center}
+    \begin{tikzpicture}
+      \vnode (x2) at (0,0) {$\x$}; % x
+      \vnode (W2) at (1.5,-1.5) {$\W$}; % W
+      \funnode (dot2) at (1.5,0) {$\times$};% x
+      \funnode (f2) at (3,0) {$f$};
+      \funnode (loss) at (4.5,0) {$\ploss$};  % loss 
+      \vnode (label) at (4.5,-1.5) {$\classi$}; % the class 
+      \vnode (outloss) at (7,0) {$\ploss(\x,\classi,\params)$}; % out value
+      %%%% graph links 
+      \draw[->] (x2) -- (dot2);
+      \draw[->] (dot2) -- (f2);
+      \draw[->] (W2) -- (dot2);
+      \draw[->] (f2) -- (loss);
+      \draw[->] (label) -- (loss);
+      \draw[->] (loss) -- (outloss);
+      %%%%% draw a box around the NNet
+      \draw[red,dotted,very thick,rounded corners] (0.75,-2) rectangle (4,0.5);
+    \end{tikzpicture}
+  \end{center}
+  %%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%
+  \begin{center}
+  $$
+  \begin{array}{ll|ll}
+    \multicolumn{2}{c|}{\textrm{Forward (inference)}} &    \multicolumn{2}{c}{\textrm{Backward (gradient)}} \\\hline
+    &&&\\
+    %%% l1 
+    \ploss(\params,\exi,\classi) &\leftarrow \outp
+    &\displaystyle \frac{\partial \ploss(\params,\exi,\classi) }{\partial\W}= &\displaystyle \frac{\partial \ploss(\params,\exi,\classi) }{\partial\outp} \\[1.5ex]
+    %%% l2
+    \outp &= f(\seq{a})
+    & &\displaystyle \times \frac{\partial \outp }{\partial\seq{a}} \\[1.5ex]
+    %%% l3
+    \seq{a} &= \W\inp
+    &  &\displaystyle \times \frac{\partial \seq{a} }{\partial\W} 
+  \end{array}
+  $$
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Illustration in 3 steps}
+  \small
+  \begin{block}{Initialization (inputs of the graph)}
+    \begin{minted}{python}
+      import torch as th
+      x = th.ones(3,1)
+      c = th.ones(1)
+      W = th.randn(1,3,requires_grad=True)
+        tensor([[-0.3999,  0.1500,  0.3771]], requires_grad=True)
+    \end{minted}
+  \end{block}
+
+  \begin{block}{Forward: build the graph}
+    \begin{minted}{python}
+      h = 1/(1+th.exp(-W@x))
+        tensor([[0.4682]], grad_fn=<MulBackward0>)
+      l =  -y*th.log(h) - (1-y)*th.log(1-h) 
+        tensor([[0.7588]], grad_fn=<SubBackward0>)
+        W.grad:  None
+    \end{minted}
+  \end{block}
+  \begin{block}{backward}
+    \begin{minted}{python}
+      l.backward() 
+        W.grad:  tensor([[0.5318, 0.5318, 0.5318]])
+    \end{minted}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{A function node}
+  \begin{block}{Forward pass}
+    \begin{center}
+      \begin{tikzpicture}
+        \vnode (x) at (0,0) {$\inp$}; %
+        \vnode (y) at (1.5,-1.5) {$\outp$}; %
+        \vnode (z) at (3,0) {$\seq{z}$}; 
+        \funnode (f) at (1.5,0) {$f$}; \draw[->] (x) -- (f); 
+        \draw[->] (y) -- (f); 
+        \draw[->] (f)  -- (z);
+      \end{tikzpicture}
+    \end{center}
+    This node implements: 
+    $$ \seq{z} = f(\inp,\outp)$$
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{A function node - 2}
+  \begin{block}{Backward pass}
+    \begin{columns}
+    \begin{column}{0.4\textwidth}
+    \begin{center}
+      \begin{tikzpicture}
+        \vnode[red] (x) at (0,0) {$\frac{\partial\ploss}{\partial\inp}$}; %
+        \vnode[red] (y) at (1.5,-1.5) {$\frac{\partial\ploss}{\partial\outp}$}; %
+        \vnode[red] (z) at (3,0) {$\frac{\partial\ploss}{\partial\seq{z}}$}; 
+        \funnode (f) at (1.5,0) {$f$}; 
+        \draw[->,red] (f) -- (x); 
+        \draw[->,red] (f) -- (y); 
+        \draw[->,red] (z)  -- (f);
+      \end{tikzpicture} 
+    \end{center}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      A function node knows : 
+      \begin{itemize}
+      \item the  "local gradients'' computation
+        $$\color{green} \frac{\partial\seq{z}}{\partial{\inp}}, \frac{\partial\seq{z}}{\partial{\outp}}$$
+      \item how to return the gradient  to the inputs: 
+        $$\big( {\color{red} \frac{\partial\ploss}{\partial\seq{z}}  }
+        {\color{green} \frac{\partial\seq{z}}{\partial{\inp}}}\big), 
+        \big( {\color{red} \frac{\partial\ploss}{\partial\seq{z}} }
+        {\color{green} \frac{\partial\seq{z}}{\partial{\outp}}}\big)$$
+      \end{itemize}
+    \end{column}
+    \end{columns}
+  \end{block}  
+\end{frame}
+
+
+\begin{frame}{Summary of a function node}
+  \begin{center}
+    \begin{tikzpicture}
+      \draw node[draw=green,fill=green!20,left,text width=7cm] {
+        {\huge $f$:}
+        \begin{align*}
+          \inp,\outp,\seq{z}&  &\textrm{\# store the values}\\
+          \seq{z} &= f(\inp,\outp)  &\textrm{\# forward}\\
+           \frac{\partial\seq{z}}{\partial{\inp}} &\rightarrow \frac{\partial f}{\partial{\inp}}&\textrm{\# local gradients} \\
+           \frac{\partial\seq{z}}{\partial{\outp}} &\rightarrow \frac{\partial f}{\partial{\outp}} \\
+           \big(\frac{\partial\ploss}{\partial\seq{z}}\frac{\partial\seq{z}}{\partial{\inp}}\big), &\big(\frac{\partial\ploss}{\partial\seq{z}}\frac{\partial\seq{z}}{\partial{\outp}}\big)&\textrm{\# backward}\\
+        \end{align*}
+      };
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Example of a single layer network}
+            \begin{center}
+          \begin{tikzpicture}
+          \vnode (x2) at (0,0) {$\x\lid{1}$}; % 
+          \vnode (W2) at  (1.5,-1.5) {$\W\lid{1}$};  % 
+          \funnode (dot2) at (1.5,0) {$\times$};%
+          \funnode (f2) at (3,0) {$f\lid{1}$}; 
+          \funnode (loss) at (4.5,0) {$\ploss$}; 
+          \vnode (label) at  (4.5,-1.5) {$\classi$};  % 
+          \vnode (outloss) at  (7,0) {$\ploss(\x\lid{1},\classi,\params)$};  % 
+          \draw[->] (x2) -- (dot2); 
+          \draw[->] (dot2) -- (f2); 
+          \draw[->] (W2) -- (dot2); 
+          \draw[->] (f2) -- (loss);
+          \draw[->] (label) -- (loss);
+          \draw[->] (loss) -- (outloss);
+        \end{tikzpicture}
+        \end{center}
+        \only<1>{
+          \begin{block}{Forward}
+            For each function node in topological order
+              \begin{itemize}
+              \item forward propagation
+              \end{itemize}
+              Which means:
+              \begin{enumerate}
+              \item $\seq{a}\lid{1} = \W\lid{1} \inp\lid{1}$
+              \item $\outp\lid{1} = f\lid{1}(\seq{a}\lid{1})$
+              \item $\ploss(\outp\lid{1},\classi)$
+              \end{enumerate}
+          \end{block}
+        }
+        \only<2>{
+          \begin{block}{Backward} 
+            For each function node in reversed topological order
+              \begin{itemize}
+              \item backward propagation
+              \end{itemize}
+              Which means:
+              \begin{enumerate}
+              \item $\pgrad{\outp\lid{1}}$
+              \item $\pgrad{\seq{a}\lid{1}}$
+              \item $\pgrad{\W\lid{1}}$
+              \end{enumerate}
+          \end{block}
+        }
+\end{frame}
+
+\begin{frame}{Example of a two layers network}
+  \begin{center}
+    \input{../figs/mlp_computation_2}
+  \end{center}
+  \begin{itemize}
+  \item The algorithms remain the same,
+  \item even for more complex
+    architectures
+  \item Generalization by coding your own  function node or by
+  \item Wrapping a layer in a module
+  \end{itemize}
+\end{frame}
+

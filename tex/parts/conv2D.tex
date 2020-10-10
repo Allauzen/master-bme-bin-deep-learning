@@ -95,6 +95,68 @@
 \end{frame}
 
 
+\begin{frame}{A simple 2D-convolution}
+  \framesubtitle{One input channel and one output channel}
+  \begin{itemize}
+  \item Image of $(7,7)$
+  \item Kernel size of $(3,3)$
+  \item Stride of $(2,2)$ along line and column
+\end{itemize}
+  \begin{columns}
+    \column{0.7\textwidth}
+    \begin{center}
+      \only<1>{Filter applied at $l=1$ and $c=1$\\[1ex]}
+      \only<2>{Filter applied at $l=1$ and $c=3$\\[1ex]}
+      \only<3>{Filter applied at $l=1$ and $c=5$\\[1ex]}
+      \only<4>{Filter applied at $l=3$ and $c=1$\\[1ex]}
+      \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.75}]
+        % the window
+        % offset for x and y of .5 + a bit more/less 
+        \only<1>{
+          \draw[fill=green!20,rounded corners] (0.45,-0.45) rectangle (3.55,-3.55); % green
+        }
+        \only<2>{
+          \draw[fill=green!20,rounded corners] (2.45,-0.45) rectangle (5.55,-3.55); % green
+        }
+        \only<3>{
+          \draw[fill=green!20,rounded corners] (4.45,-0.45) rectangle (7.55,-3.55); % green
+        }
+        \only<4>{
+          \draw[fill=green!20,rounded corners] (0.45,-2.45) rectangle (3.55,-5.55); % green
+        }
+        %% the grid 
+        \foreach \l in {1,2,...,7}%{8,7,...,1}
+        \foreach \c in {1,2,...,7}
+        {
+          \draw (\c,-\l) +(-.5,-.5) rectangle ++(.5,.5);
+          \draw (\c,-\l) node{$x_{\l,\c}$};
+        }
+      \end{tikzpicture}
+    \end{center}
+
+    \column{0.3\textwidth}
+    \begin{center}
+      The filter or kernel is $3\times 3 $\\[1ex]
+      \begin{tikzpicture}[scale=0.5,every node/.style={scale=0.75}]
+        % the window
+        % offset for x and y of .5 + a bit more 
+        \draw[fill=red!20,rounded corners] (0.45,-0.45) rectangle (3.55,-3.55); % green 
+        
+        %% the grid 
+        \foreach \l in {1,2,3}
+        \foreach \c in {1,2,3}
+        {
+          \draw (\c,-\l) +(-.5,-.5) rectangle ++(.5,.5);
+          \draw (\c,-\l) node{$w_{\l,\c}$};
+        }
+      \end{tikzpicture}
+    \end{center}
+  \end{columns}
+    $$
+    \textrm{At position }l, \textrm{ and } c,\ {\color{red!70!black} h_{l,c}} = \sum_{i,j} {\color{red!70!black}w_{i,j}}\times  {\color{green!70!black}x_{l+i-1,c+j-1}}
+  $$
+\end{frame}
+
 \begin{frame}{Convolution in 2D}
   \framesubtitle{The basics}
   \begin{columns}
@@ -252,6 +314,33 @@
   \end{center}
 \end{frame}
 
+
+
+\begin{frame}{Residual block }
+  \begin{block}{Residual block}
+    \begin{columns}
+    \column{0.5\textwidth}
+    From~\cite{He16Residual}
+    \begin{itemize}
+    \item Add a skip connection
+    \item The model learn the "residual"
+      $$
+      \y = \mathcal{F}(\x) = \x + \mathcal{R}(\x)
+      $$
+    \end{itemize}
+      \column{0.5\textwidth}
+      \begin{center}
+        \includegraphics[width=0.8\textwidth]{../figs/residual}
+      \end{center}
+    \end{columns}
+    A simple version of highway networks~\cite{Srivastava15Highway}
+  \end{block}
+  \begin{block}{ResNet}
+      \begin{center}
+        \includegraphics[width=\textwidth]{../figs/resnet}
+      \end{center}    
+  \end{block}
+\end{frame}
 
 
 \begin{frame}{Residual block}

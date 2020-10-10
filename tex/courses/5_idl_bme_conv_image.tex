@@ -1,0 +1,116 @@
+\documentclass[10pt]{beamer}
+%% beamer template and options 
+\mode<presentation>
+{
+  \usetheme{CambridgeUS}
+  \usefonttheme{serif}
+  \useoutertheme{default}
+}\setbeamertemplate{navigation symbols}{} 
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor,comment,cancel,tabularx,multirow}
+\specialcomment{extended}{}{}    
+\excludecomment{extended}
+\usepackage{../styles/authordate1-4-beamer}
+
+\usepackage{pgfplots}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{tikz}
+\usetikzlibrary{automata,fit}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{snakes}
+\usetikzlibrary{arrows.meta,intersections}
+\tikzstyle{every picture}+=[remember picture]
+\usetikzlibrary{decorations.markings}
+
+
+
+
+
+\title[IDL@BME-BIN] % (optional, use only with long paper titles)
+{Introduction to Deep Learning} 
+\subtitle{2D Convolution for image }
+
+\author[A. Allauzen] % (optional, use only with lots of authors)
+{Alexandre Allauzen}
+
+
+
+\institute[ESPCI/Dauphine/PSL] % (optional, but mostly needed)
+{
+\includegraphics[height=3em]{../logos/espci_blue.png}\hfill
+\raisebox{1.75ex}{\includegraphics[height=1.5em]{../logos/dauphine.png}}\\
+\hfill\includegraphics[height=3em]{../logos/logomiles_white.pdf}
+}
+
+
+
+
+\date{12 and 13/10/20} % (optional)
+
+\input{../styles/common.tex}
+\input{../styles/common_nnet.tex}
+
+%%%%%%%%% macro et redefinition 
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+\tikzset{->-/.style={decoration={
+  markings,
+  mark=at position .5 with {\arrow{>}}},postaction={decorate}}}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+ 
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction and reminder}
+%%% reminder: sequence of discrete symbols
+% + exemples of Human activity / audio classification
+% embeddings
+% COnv 1D
+% Pooling
+%%% Exo: conv1D and padding
+%%% Exo: Pooling derivative 
+%%% links : 
+% https://arxiv.org/pdf/1607.02383.pdf for music classif
+% and https://arxiv.org/pdf/1904.08990.pdf
+% for heart signal : https://asp-eurasipjournals.springeropen.com/articles/10.1186/s13634-019-0651-3
+% MFCC and 1D conv + DAE
+\input{../parts/conv1D_reminder}
+\input{../parts/conv1D_ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Convolution network for images}
+\input{../parts/conv2D}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{../styles/naaclhlt2012}
+{\footnotesize \bibliography{./alex}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

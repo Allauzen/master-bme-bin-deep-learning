@@ -19,7 +19,7 @@
   \end{align*}
   \end{frame}
 
-
+G
   
 \begin{frame}
   \frametitle{The conditionnal ``Likelihood'' measured on $\dataset$}
@@ -28,7 +28,7 @@
        P(\datac | \datax, \params) &= \prod_{i=1}^n P(\rvclass = \classi| \exi, \params) \\
        P(\datac | \datax, \params) &= \prod_{i=1}^n\bern\sid{i}^{\classi} (1-\bern\sid{i})^{1-\classi}\\
        \bern\sid{i} &= y\sid{i} = \sigma(w_0 + \scal{\vct{w}}{\exi})  = \frac{1}{1+e^{-(w_0 + \scal{\vct{w}}{\exi})}}
-     \end{align*}
+     \end{align*}git 
      \begin{block}{The loss function (to minimize)}
        \begin{align*}
          \fullloss &= - log(P(\datac | \datax, \params) ) =  \sum_{i=1}^n  {\color{red} - \big(  \classi log(y\sid{i} )+ (1-\classi) log(1-y\sid{i})  \big)}\\

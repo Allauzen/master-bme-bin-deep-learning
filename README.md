@@ -5,12 +5,18 @@ Five sessions of 3 hours each:
 - Monday 12/10/2020 after-noon 
 - Tuesday 13/10/2020 morning 
 - Tuesday 13/10/2020 after-noon 
-- Thursday 15/10/2020 morning 
+
+
+# remark
+- too many things
+- shorten the computation graph and provide more examples of pytorch code
+- how to inspect what is learnt ? 
+- suppress language modeling ? and focus on word 2 vec for unsupervised pre-training ? 
 
 
 
 
-Outline of the course: 
+# Outline of the course: 
 
 - introduction
 - a single artificial neuron
